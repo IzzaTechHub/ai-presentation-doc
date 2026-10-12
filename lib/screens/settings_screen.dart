@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import '../widgets/floating_bottom_bar.dart';
 import '../widgets/interactive_bounce.dart';
+import '../widgets/app_snackbar.dart';
 import '../theme/app_theme.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -171,13 +172,22 @@ class SettingsScreen extends StatelessWidget {
                         icon: Icons.share_outlined,
                         title: "Share App",
                         subtitle: "Tell your friends about us",
-                        onTap: () {
-                          SharePlus.instance.share(
-                            ShareParams(
-                              text:
-                                  'Check out ImagineX - Create amazing presentations with AI!\nhttps://play.google.com/store/apps/details?id=com.ai.visualizer.app',
-                            ),
-                          );
+                        onTap: () async {
+                          try {
+                            await SharePlus.instance.share(
+                              ShareParams(
+                                text:
+                                    'Check out ImagineX - Create amazing presentations with AI!\nhttps://play.google.com/store/apps/details?id=com.ai.visualizer.app',
+                              ),
+                            );
+                          } catch (_) {
+                            if (context.mounted) {
+                              showAppSnackBar(
+                                context,
+                                message: "Unable to share app at this time.",
+                              );
+                            }
+                          }
                         },
                       ),
                       const Divider(color: AppColors.surfaceBorder, height: 1),
@@ -186,14 +196,30 @@ class SettingsScreen extends StatelessWidget {
                         title: "Rate Us",
                         subtitle: "Rate us on the Play Store",
                         onTap: () async {
-                          final uri = Uri.parse(
-                            'https://play.google.com/store/apps/details?id=com.ai.visualizer.app',
-                          );
-                          if (await canLaunchUrl(uri)) {
-                            await launchUrl(
-                              uri,
-                              mode: LaunchMode.externalApplication,
+                          try {
+                            final uri = Uri.parse(
+                              'https://play.google.com/store/apps/details?id=com.ai.visualizer.app',
                             );
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            } else {
+                              if (context.mounted) {
+                                showAppSnackBar(
+                                  context,
+                                  message: "Unable to open app store link.",
+                                );
+                              }
+                            }
+                          } catch (_) {
+                            if (context.mounted) {
+                              showAppSnackBar(
+                                context,
+                                message: "Unable to open app store link.",
+                              );
+                            }
                           }
                         },
                       ),

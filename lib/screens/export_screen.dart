@@ -7,6 +7,7 @@ import '../services/api_service.dart';
 import '../services/error_handler.dart';
 import '../services/file_service.dart';
 import '../widgets/app_error_dialog.dart';
+import '../widgets/app_snackbar.dart';
 import '../widgets/floating_bottom_bar.dart';
 import '../widgets/interactive_bounce.dart';
 import '../theme/app_theme.dart';
@@ -48,26 +49,14 @@ class _ExportScreenState extends State<ExportScreen> {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final filename = "presentation_$timestamp.pptx";
 
-      final savedPath = await FileService.saveFileToDownloads(bytes, filename);
+      await FileService.saveFileToDownloads(bytes, filename);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppColors.success,
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle_outline, color: Colors.white),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    "Saved to Downloads!\nPath: $savedPath",
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
-                  ),
-                ),
-              ],
-            ),
-            duration: const Duration(seconds: 5),
-          ),
+        showAppSnackBar(
+          context,
+          message: "Presentation saved to Downloads as $filename",
+          isSuccess: true,
+          duration: const Duration(seconds: 4),
         );
       }
     } catch (e) {

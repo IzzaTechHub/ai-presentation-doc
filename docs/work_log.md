@@ -217,6 +217,32 @@
    - Verified 10/10 unit tests passing across all suites.
    - Verified `flutter analyze` with **0 errors and 0 warnings**.
 
+---
+
+## Cyber Security & Anti-Leak Error Handling Architecture Audit
+
+- **Date:** 2026-10-12
+- **Objective:** Exhaustively audit the codebase from a cybersecurity and data-leakage perspective to guarantee that no internal endpoints, backend URLs, SSH keys, credentials, raw JSON payloads, filesystem paths, or stack traces can ever leak to the end-user.
+
+### Completed Tasks
+1. **Shielded Error Sanitization Engine ([lib/services/error_handler.dart](file:///e:/Abdulrahman/imagineX/lib/services/error_handler.dart)):**
+   - Implemented an uncompromising token blacklist blocking URLs (`http://`, `https://`, `ftp://`, `ssh://`, `git://`, `ws://`), domains/hosts (`.vercel.app`, `localhost`, `127.0.0.1`, IP addresses, ports), credentials (`bearer `, `token`, `secret`, `api_key`, `apikey`, `password`, `credential`), SSH keys (`ssh`, `id_rsa`, `id_ed25519`, `known_hosts`, `authorized_keys`, `git@`), JSON syntax (`{`, `}`, `":"`, `"error":`), and system runtime paths (`c:\`, `/data/user/`, `/storage/`, `stack trace:`, `exception:`).
+   - Created `isSafeUserFacingMessage()` validator and `sanitizeUserMessage()` sanitizer.
+   - Any sensitive or technical message is immediately converted to a safe user message: `"Something went wrong. Please check your internet connection and try again."`
+2. **Defense-in-Depth UI Guarding ([lib/widgets/app_snackbar.dart](file:///e:/Abdulrahman/imagineX/lib/widgets/app_snackbar.dart)):**
+   - Added automatic sanitization filter to `showAppSnackBar` so that any message passed to it is checked and sanitized before rendering.
+3. **Internal Path Masking in Export & Storage ([lib/screens/export_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/export_screen.dart), [lib/services/file_service.dart](file:///e:/Abdulrahman/imagineX/lib/services/file_service.dart)):**
+   - Removed raw system path display (`Path: $savedPath`) from export completion notice; replaced with clean, safe filename notice (`"Presentation saved to Downloads as $filename"`).
+   - Replaced generic `throw Exception` in `FileService` with typed, safe `AppException`.
+4. **Action Hardening ([lib/screens/home_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/home_screen.dart), [lib/screens/settings_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/settings_screen.dart)):**
+   - Standardized `Export` SnackBar in `HomeScreen` to `showAppSnackBar`.
+   - Protected external app store and share triggers in `SettingsScreen` with safe try-catch handlers.
+5. **Global Framework Error Shielding ([lib/main.dart](file:///e:/Abdulrahman/imagineX/lib/main.dart)):**
+   - Configured `FlutterError.onError` and `PlatformDispatcher.instance.onError` to prevent unexpected crashes or framework assertions from rendering red screen stack dumps to users.
+6. **Testing & QA Verification:**
+   - Added 4 dedicated cybersecurity unit test scenarios in [test/error_handler_test.dart](file:///e:/Abdulrahman/imagineX/test/error_handler_test.dart) (14/14 tests passing).
+   - `flutter analyze` verified: **0 errors, 0 warnings**.
+
 
 
 

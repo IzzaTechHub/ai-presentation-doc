@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/error_handler.dart';
 import '../theme/app_theme.dart';
 
 /// Shows a floating, styled notification banner.
@@ -11,6 +12,13 @@ void showAppSnackBar(
   Duration duration = const Duration(seconds: 4),
 }) {
   ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+  // Defense-in-depth: automatically sanitize any raw messages
+  final safeMessage = isError
+      ? ErrorHandler.sanitizeUserMessage(message)
+      : (ErrorHandler.isSafeUserFacingMessage(message)
+          ? message
+          : ErrorHandler.sanitizeUserMessage(message));
 
   final Color iconColor = isError
       ? AppColors.error
@@ -66,7 +74,7 @@ void showAppSnackBar(
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                message,
+                safeMessage,
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,

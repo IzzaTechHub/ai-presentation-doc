@@ -108,12 +108,8 @@ class ApiService {
       try {
         final decoded = json.decode(response.body);
         if (decoded is Map<String, dynamic> && decoded.containsKey('error')) {
-          final errStr = decoded['error'].toString();
-          // Shield internal technical messages
-          if (!errStr.contains('http') &&
-              !errStr.contains('{') &&
-              !errStr.contains('.vercel') &&
-              errStr.length < 100) {
+          final errStr = decoded['error'].toString().trim();
+          if (ErrorHandler.isSafeUserFacingMessage(errStr)) {
             friendlyMessage = errStr;
           }
         }

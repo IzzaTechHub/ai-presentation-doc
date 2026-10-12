@@ -164,8 +164,9 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           InteractiveBounce(
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Generate a presentation first to export!")),
+              showAppSnackBar(
+                context,
+                message: "Generate a presentation first to export!",
               );
             },
             child: Padding(

@@ -63,7 +63,7 @@ void main() {
       expect(appError.message.contains('/generate'), isFalse);
     });
 
-    test('Existing AppException passes through unchanged', () {
+    test('Existing safe AppException passes through unchanged', () {
       const custom = AppException(
         title: "Custom Title",
         message: "Friendly notice message",
@@ -74,6 +74,42 @@ void main() {
       expect(parsed, equals(custom));
       expect(parsed.title, equals("Custom Title"));
       expect(parsed.message, equals("Friendly notice message"));
+    });
+
+    test('Strictly rejects and shields SSH, Git and credential strings', () {
+      expect(ErrorHandler.isSafeUserFacingMessage("ssh-rsa AAAAB3NzaC1yc2EAAAADAQAB"), isFalse);
+      expect(ErrorHandler.isSafeUserFacingMessage("git@github.com:IzzaTechHub/repo.git"), isFalse);
+      expect(ErrorHandler.isSafeUserFacingMessage("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"), isFalse);
+      expect(ErrorHandler.isSafeUserFacingMessage("api_key=sk-1234567890abcdef"), isFalse);
+      expect(ErrorHandler.isSafeUserFacingMessage("password=supersecret"), isFalse);
+
+      final sanitized = ErrorHandler.sanitizeUserMessage("ssh root@192.168.1.1 permission denied");
+      expect(sanitized, equals("Something went wrong. Please check your internet connection and try again."));
+    });
+
+    test('Strictly rejects and shields URLs, Vercel hosts and ports', () {
+      expect(ErrorHandler.isSafeUserFacingMessage("https://ai-presentation-backend.vercel.app/generate"), isFalse);
+      expect(ErrorHandler.isSafeUserFacingMessage("http://localhost:3000/api"), isFalse);
+      expect(ErrorHandler.isSafeUserFacingMessage("connect ECONNREFUSED 127.0.0.1:8080"), isFalse);
+
+      final sanitized = ErrorHandler.sanitizeUserMessage("Error at https://ai-presentation-backend.vercel.app");
+      expect(sanitized, equals("Something went wrong. Please check your internet connection and try again."));
+    });
+
+    test('Strictly rejects and shields raw JSON payloads and stack traces', () {
+      expect(ErrorHandler.isSafeUserFacingMessage('{"status": 500, "error": "Internal AI error"}'), isFalse);
+      expect(ErrorHandler.isSafeUserFacingMessage('stack trace: #0 main (package:imaginex/main.dart:12)'), isFalse);
+      expect(ErrorHandler.isSafeUserFacingMessage('Unhandled exception: Null check operator used on null value'), isFalse);
+
+      final parsed = ErrorHandler.parse(Exception('{"secret_token": "xyz123"}'));
+      expect(parsed.message, equals("Something went wrong. Please check your internet connection and try again."));
+      expect(parsed.message.contains("xyz123"), isFalse);
+    });
+
+    test('Allows genuine, clean human-readable sentences', () {
+      expect(ErrorHandler.isSafeUserFacingMessage("Please enter a descriptive prompt."), isTrue);
+      expect(ErrorHandler.isSafeUserFacingMessage("Unable to save presentation to device."), isTrue);
+      expect(ErrorHandler.isSafeUserFacingMessage("Prompt optimized with AI!"), isTrue);
     });
   });
 }

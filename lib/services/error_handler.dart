@@ -5,23 +5,148 @@ import 'app_exception.dart';
 
 /// Centralized utility to safely sanitize, categorize, and transform errors
 /// into clear, user-friendly messages without ever exposing technical stack
-/// traces, internal URLs, or raw JSON payloads.
+/// traces, internal URLs, SSH keys, credentials, or raw JSON payloads.
 class ErrorHandler {
+  /// Strict blacklist of sensitive tokens that MUST NEVER be displayed to the end-user.
+  static final List<String> _sensitiveTokens = [
+    // Protocols & network references
+    'http://',
+    'https://',
+    'ws://',
+    'wss://',
+    'ftp://',
+    'ssh://',
+    'git://',
+    'file://',
+    'git@',
+
+    // Hosts, domains & cloud platforms
+    '.vercel.app',
+    '.herokuapp.com',
+    '.onrender.com',
+    'amazonaws.com',
+    '.azurewebsites.net',
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    ':8080',
+    ':3000',
+    ':5000',
+    ':443',
+
+    // SSH, keys & credentials
+    'ssh',
+    'id_rsa',
+    'id_ed25519',
+    'known_hosts',
+    'authorized_keys',
+    'bearer ',
+    'token',
+    'secret',
+    'api_key',
+    'apikey',
+    'private_key',
+    'password',
+    'credential',
+    'authorization:',
+
+    // JSON, XML & HTML markup syntax
+    '{',
+    '}',
+    '":"',
+    '"error":',
+    '"code":',
+    '"message":',
+    '"status":',
+    '<!doctype',
+    '<html',
+    '<script',
+    '<div>',
+    'xmlhttprequest',
+
+    // File paths & internal runtime diagnostics
+    'c:\\',
+    'c:/',
+    '/data/user/',
+    '/storage/emulated/',
+    '/var/task',
+    '/tmp/',
+    '/etc/',
+    'package:',
+    'dart:',
+    '.dart:',
+    'stack trace:',
+    'traceback',
+    'exception:',
+    'clientexception',
+    'socketexception',
+    'timeoutexception',
+    'handshake failed',
+    'errno =',
+    'os error:',
+    'failed host lookup',
+  ];
+
+  /// Checks if a message is 100% safe to present to the user.
+  /// Rejects anything containing URLs, SSH, credentials, JSON syntax, or system paths.
+  static bool isSafeUserFacingMessage(String? msg) {
+    if (msg == null) return false;
+    final trimmed = msg.trim();
+    if (trimmed.isEmpty || trimmed.length > 100) return false;
+
+    final lower = trimmed.toLowerCase();
+    for (final token in _sensitiveTokens) {
+      if (lower.contains(token)) {
+        return false;
+      }
+    }
+
+    // Must not contain curly braces or brackets that resemble raw data
+    if (trimmed.contains('{') || trimmed.contains('}') || trimmed.contains('[') || trimmed.contains(']')) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /// Sanitizes any user-facing text, immediately replacing sensitive or technical
+  /// messages with a friendly fallback.
+  static String sanitizeUserMessage(
+    String? raw, {
+    String fallback = "Something went wrong. Please check your internet connection and try again.",
+  }) {
+    if (raw == null) return fallback;
+    final cleaned = raw.replaceAll('Exception: ', '').trim();
+    if (isSafeUserFacingMessage(cleaned)) {
+      return cleaned;
+    }
+    return fallback;
+  }
+
   /// Transforms any thrown error or exception into a sanitized, typed [AppException].
   static AppException parse(dynamic error) {
     if (error is AppException) {
-      return error;
+      // If the message is already safe, return it directly
+      if (isSafeUserFacingMessage(error.message)) {
+        return error;
+      }
+      return AppException(
+        title: error.title,
+        message: "Something went wrong. Please check your internet connection and try again.",
+        type: error.type,
+        originalError: error.originalError,
+      );
     }
 
-    // Safely log internal diagnostics in debug mode without user visibility
+    // Safely log internal diagnostics in debug mode only without user exposure
     if (kDebugMode) {
-      debugPrint('[ErrorHandler] Caught exception: $error');
+      debugPrint('[ErrorHandler] Shielded internal exception: $error');
     }
 
     if (error is SocketException) {
       return AppException(
         title: "No Internet Connection",
-        message: "Please check your Wi-Fi or mobile data connection and try again.",
+        message: "Unable to reach the presentation server. Please check your internet connection and try again.",
         type: ErrorType.network,
         originalError: error,
       );
@@ -30,7 +155,7 @@ class ErrorHandler {
     if (error is TimeoutException) {
       return AppException(
         title: "Connection Timed Out",
-        message: "The server took too long to respond. Please check your internet and try again.",
+        message: "The server took too long to respond. Please check your internet connection and try again.",
         type: ErrorType.timeout,
         originalError: error,
       );
@@ -39,7 +164,7 @@ class ErrorHandler {
     if (error is FormatException) {
       return AppException(
         title: "Processing Error",
-        message: "Unable to parse presentation content. Please try again with a different topic.",
+        message: "Unable to parse presentation content. Please check your internet connection and try again.",
         type: ErrorType.parse,
         originalError: error,
       );
@@ -55,10 +180,12 @@ class ErrorHandler {
         rawString.contains('connection refused') ||
         rawString.contains('connection reset') ||
         rawString.contains('handshake failed') ||
-        rawString.contains('os error: no address associated with hostname')) {
+        rawString.contains('os error: no address associated with hostname') ||
+        rawString.contains('network error') ||
+        rawString.contains('offline')) {
       return AppException(
         title: "No Internet Connection",
-        message: "Unable to reach the presentation server. Please check your internet connection.",
+        message: "Unable to connect to the presentation server. Please check your internet connection and try again.",
         type: ErrorType.network,
         originalError: error,
       );
@@ -68,7 +195,7 @@ class ErrorHandler {
     if (rawString.contains('timed out') || rawString.contains('timeoutexception')) {
       return AppException(
         title: "Request Timed Out",
-        message: "The presentation generation took longer than expected. Please try again.",
+        message: "The request took longer than expected. Please check your internet connection and try again.",
         type: ErrorType.timeout,
         originalError: error,
       );
@@ -91,10 +218,11 @@ class ErrorHandler {
         rawString.contains('504') ||
         rawString.contains('gateway timeout') ||
         rawString.contains('bad gateway') ||
-        rawString.contains('internal server error')) {
+        rawString.contains('internal server error') ||
+        rawString.contains('server error')) {
       return AppException(
         title: "Server Temporarily Unavailable",
-        message: "The AI presentation service is currently experiencing high demand. Please try again shortly.",
+        message: "The AI presentation service is temporarily busy. Please check your internet connection and try again.",
         type: ErrorType.server,
         originalError: error,
       );
@@ -103,7 +231,7 @@ class ErrorHandler {
     // Check for invalid input (400)
     if (rawString.contains('400') || rawString.contains('bad request')) {
       return AppException(
-        title: "Invalid Topic Input",
+        title: "Invalid Topic Description",
         message: "Please enter a valid presentation topic or prompt description.",
         type: ErrorType.client,
         originalError: error,
@@ -116,16 +244,16 @@ class ErrorHandler {
         rawString.contains('json.decode') ||
         rawString.contains('syntaxerror')) {
       return AppException(
-        title: "Generation Format Issue",
-        message: "The AI returned an invalid slide structure. Please try refining your topic.",
+        title: "Processing Notice",
+        message: "Unable to assemble slide content. Please check your internet connection and try again.",
         type: ErrorType.parse,
         originalError: error,
       );
     }
 
-    // Fallback: check if the string message is user-friendly and doesn't leak URLs/code
-    final cleaned = _sanitizeMessage(error.toString());
-    if (cleaned != null && cleaned.isNotEmpty) {
+    // Check if the raw message is safe and non-technical
+    final cleaned = error.toString().replaceAll('Exception: ', '').trim();
+    if (isSafeUserFacingMessage(cleaned)) {
       return AppException(
         title: "Notice",
         message: cleaned,
@@ -134,39 +262,12 @@ class ErrorHandler {
       );
     }
 
-    // Default safe fallback
+    // Safe universal fallback as requested: "Something went wrong, please check your internet connection"
     return AppException(
       title: "Something Went Wrong",
-      message: "An unexpected error occurred while processing your request. Please try again.",
+      message: "Something went wrong. Please check your internet connection and try again.",
       type: ErrorType.unknown,
       originalError: error,
     );
-  }
-
-  /// Strips technical code, HTTP URLs, file paths, and package artifacts from raw messages.
-  static String? _sanitizeMessage(String raw) {
-    String msg = raw.replaceAll('Exception: ', '').trim();
-
-    // If message contains sensitive indicators, reject it
-    if (msg.contains('http://') ||
-        msg.contains('https://') ||
-        msg.contains('.vercel.app') ||
-        msg.contains('{') ||
-        msg.contains('}') ||
-        msg.contains('<html') ||
-        msg.contains('<!DOCTYPE') ||
-        msg.contains('XMLHttpRequest') ||
-        msg.contains('ClientException') ||
-        msg.contains('SocketException') ||
-        msg.contains('Stack trace:')) {
-      return null;
-    }
-
-    // If message is too long (likely raw response dump), reject it
-    if (msg.length > 120) {
-      return null;
-    }
-
-    return msg;
   }
 }
