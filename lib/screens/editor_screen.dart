@@ -544,7 +544,7 @@ class _EditorScreenState extends State<EditorScreen> {
             ),
             const SizedBox(width: 10),
             Text(
-              "SlideAI",
+              "ImagineX",
               style: GoogleFonts.outfit(
                 fontWeight: FontWeight.w700,
                 color: AppColors.primary,

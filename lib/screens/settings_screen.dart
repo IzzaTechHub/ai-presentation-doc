@@ -108,7 +108,7 @@ class SettingsScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "AI Visualizer",
+                              "ImagineX",
                               style: GoogleFonts.outfit(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w800,
@@ -175,7 +175,7 @@ class SettingsScreen extends StatelessWidget {
                           SharePlus.instance.share(
                             ShareParams(
                               text:
-                                  'Check out AI Visualizer - Create amazing presentations with AI!\nhttps://play.google.com/store/apps/details?id=com.ai.visualizer.app',
+                                  'Check out ImagineX - Create amazing presentations with AI!\nhttps://play.google.com/store/apps/details?id=com.ai.visualizer.app',
                             ),
                           );
                         },

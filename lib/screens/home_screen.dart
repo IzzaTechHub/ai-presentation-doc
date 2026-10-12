@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(width: 10),
             Text(
-              "SlideAI",
+              "ImagineX",
               style: GoogleFonts.outfit(
                 fontWeight: FontWeight.w700,
                 color: AppColors.primary,
@@ -258,7 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ).animate().fadeIn(delay: 100.ms, duration: 450.ms).slideY(begin: 0.2, end: 0),
                     const SizedBox(height: 8),
                     Text(
-                      "Enter your topic or outline. SlideAI creates slides with tailored layouts, typography, and imagery.",
+                      "Enter your topic or outline. ImagineX creates slides with tailored layouts, typography, and imagery.",
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         color: AppColors.textSecondary,
