@@ -49,6 +49,8 @@ class AppColors {
   // Status & Utility
   static const Color success = Color(0xFF10B981);
   static const Color error = Color(0xFFEF4444);
+  static const Color errorContainer = Color(0xFFFEE2E2);
+  static const Color errorBorder = Color(0xFFFECACA);
   static const Color warning = Color(0xFFF59E0B);
 }
 
