@@ -152,6 +152,22 @@
    - Verified `flutter analyze` with **0 errors and 0 warnings**.
    - Authored technical spec in [docs/qa/error_handling_architecture.md](file:///e:/Abdulrahman/imagineX/docs/qa/error_handling_architecture.md).
 
+---
+
+## UI Refinement: Header Pill Tag Removal
+
+- **Date:** 2026-10-12
+- **Objective:** Remove the unwanted "Next-Gen AI Deck Generator" badge/pill tag above the main heading on the Home screen to declutter the layout and keep the hero section clean and focused.
+
+### Completed Tasks
+1. **HomeScreen Clean-up:**
+   - Removed the top pill container and spacing from [lib/screens/home_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/home_screen.dart).
+   - Hero section now transitions directly into the bold presentation title without redundant tagline clutter.
+2. **Verification & Quality Gate:**
+   - `flutter analyze` verified with **0 errors and 0 warnings**.
+   - All tests passing.
+
+
 
 
 
