@@ -6,6 +6,7 @@ import '../models/slide_model.dart';
 import '../models/template_model.dart';
 import '../widgets/floating_bottom_bar.dart';
 import '../widgets/interactive_bounce.dart';
+import '../widgets/app_snackbar.dart';
 import '../theme/app_theme.dart';
 import '../services/app_state.dart';
 import 'editor_screen.dart';
@@ -37,33 +38,41 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   void _loadPresentation(Map<String, dynamic> item) {
-    // Parse slides
-    final slidesJson = item['slides'] as List<dynamic>;
-    final slides = slidesJson.map((s) => SlideModel.fromJson(s)).toList();
+    try {
+      // Parse slides
+      final slidesJson = item['slides'] as List<dynamic>;
+      final slides = slidesJson.map((s) => SlideModel.fromJson(s)).toList();
 
-    // Parse template
-    final templateJson = item['templateJson'] as Map<String, dynamic>;
-    final template = TemplateModel.fromJson(templateJson);
+      // Parse template
+      final templateJson = item['templateJson'] as Map<String, dynamic>;
+      final template = TemplateModel.fromJson(templateJson);
 
-    // Save globally
-    AppState.activeSlides = slides;
-    AppState.selectedTemplate = template;
-    AppState.currentTopic = item['topic'] ?? '';
-    AppState.currentSlideCount = slides.length;
+      // Save globally
+      AppState.activeSlides = slides;
+      AppState.selectedTemplate = template;
+      AppState.currentTopic = item['topic'] ?? '';
+      AppState.currentSlideCount = slides.length;
 
-    // Navigate to Editor (Tab 2)
-    Navigator.pushAndRemoveUntil(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, anim1, anim2) => EditorScreen(
-          initialSlides: slides,
-          selectedTemplate: template,
+      // Navigate to Editor (Tab 2)
+      Navigator.pushAndRemoveUntil(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, anim1, anim2) => EditorScreen(
+            initialSlides: slides,
+            selectedTemplate: template,
+          ),
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
         ),
-        transitionDuration: Duration.zero,
-        reverseTransitionDuration: Duration.zero,
-      ),
-      (route) => false,
-    );
+        (route) => false,
+      );
+    } catch (_) {
+      showAppSnackBar(
+        context,
+        message: "Unable to load presentation. Saved format might be corrupted.",
+        isError: true,
+      );
+    }
   }
 
   void _deleteHistoryItem(String id) async {
@@ -72,8 +81,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
     });
     await AppState.saveHistoryToStorage();
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Presentation removed from history")),
+      showAppSnackBar(
+        context,
+        message: "Presentation removed from history.",
       );
     }
   }

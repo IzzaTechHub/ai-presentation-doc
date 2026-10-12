@@ -4,7 +4,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/slide_model.dart';
 import '../services/api_service.dart';
+import '../services/error_handler.dart';
 import '../services/file_service.dart';
+import '../widgets/app_error_dialog.dart';
 import '../widgets/floating_bottom_bar.dart';
 import '../widgets/interactive_bounce.dart';
 import '../theme/app_theme.dart';
@@ -70,11 +72,11 @@ class _ExportScreenState extends State<ExportScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppColors.error,
-            content: Text("Download failed: ${e.toString().replaceAll("Exception: ", "")}"),
-          ),
+        final appError = ErrorHandler.parse(e);
+        showAppErrorDialog(
+          context,
+          error: appError,
+          onRetry: _downloadPPTX,
         );
       }
     } finally {

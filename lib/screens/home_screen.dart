@@ -5,8 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'template_screen.dart';
 import '../widgets/floating_bottom_bar.dart';
 import '../widgets/interactive_bounce.dart';
+import '../widgets/app_snackbar.dart';
 import '../services/app_state.dart';
 import '../services/api_service.dart';
+import '../services/error_handler.dart';
 import '../theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -34,11 +36,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void _perfectPrompt() async {
     final text = _topicController.text.trim();
     if (text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please enter a topic or prompt to perfect!"),
-          backgroundColor: AppColors.error,
-        ),
+      showAppSnackBar(
+        context,
+        message: "Please enter a topic or prompt first to optimize it.",
+        isError: true,
       );
       return;
     }
@@ -57,12 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
           _isPerfecting = false;
         });
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Prompt optimized with AI!"),
-            backgroundColor: AppColors.success,
-            duration: Duration(seconds: 3),
-          ),
+        showAppSnackBar(
+          context,
+          message: "Prompt optimized with AI!",
+          isSuccess: true,
         );
       }
     } catch (e) {
@@ -72,11 +71,11 @@ class _HomeScreenState extends State<HomeScreen> {
           _previousPrompt = null;
         });
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Failed to perfect prompt: ${e.toString().replaceAll("Exception: ", "")}"),
-            backgroundColor: AppColors.error,
-          ),
+        final appError = ErrorHandler.parse(e);
+        showAppSnackBar(
+          context,
+          message: appError.message,
+          isError: true,
         );
       }
     }
@@ -88,11 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
         _topicController.text = _previousPrompt!;
         _previousPrompt = null;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Reverted to original prompt."),
-          backgroundColor: Color(0xFF757575),
-        ),
+      showAppSnackBar(
+        context,
+        message: "Reverted to original prompt.",
       );
     }
   }

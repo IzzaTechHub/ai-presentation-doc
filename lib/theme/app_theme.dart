@@ -27,6 +27,7 @@ class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+  static const LinearGradient primaryGradient = orangeGradient;
 
   static const LinearGradient orangeGlowGradient = LinearGradient(
     colors: [primaryLight, primary],

@@ -6,6 +6,7 @@ import '../models/template_model.dart';
 import '../services/app_state.dart';
 import '../widgets/floating_bottom_bar.dart';
 import '../widgets/interactive_bounce.dart';
+import '../widgets/app_snackbar.dart';
 import '../theme/app_theme.dart';
 import 'export_screen.dart';
 import 'template_screen.dart';
@@ -177,8 +178,9 @@ class _EditorScreenState extends State<EditorScreen> {
     final slide = _slides[_selectedSlideIndex];
     final idx = _selectedBulletIndex;
     if (idx == null || idx < 0 || idx >= slide.bullets.length) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tap a bullet first, then remove it.')),
+      showAppSnackBar(
+        context,
+        message: "Tap a bullet point on the slide first to select and remove it.",
       );
       return;
     }
@@ -207,15 +209,19 @@ class _EditorScreenState extends State<EditorScreen> {
       _selectedBulletIndex = null;
       AppState.activeSlides = _slides;
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("New slide added at the end")),
+    showAppSnackBar(
+      context,
+      message: "New slide added to presentation.",
+      isSuccess: true,
     );
   }
 
   void _deleteSlide() {
     if (_slides.length <= 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Cannot delete the only remaining slide.")),
+      showAppSnackBar(
+        context,
+        message: "Cannot delete the only remaining slide in the deck.",
+        isError: true,
       );
       return;
     }

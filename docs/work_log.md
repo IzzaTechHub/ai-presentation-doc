@@ -123,5 +123,35 @@
    - `flutter analyze` completed with **0 errors and 0 warnings**.
    - Design specs documented in [docs/ui/light_theme_design.md](file:///e:/Abdulrahman/imagineX/docs/ui/light_theme_design.md).
 
+---
+
+## Shielded Error Handling & Exception Architecture Overhaul
+
+- **Date:** 2026-10-12
+- **Objective:** Eliminate raw exception, URL, and JSON payload leakage into user interfaces. Establish robust error classification, safe timeouts, human-friendly messaging, and contextual retry dialogs.
+
+### Completed Tasks
+1. **Typed Error Modeling (`AppException`):**
+   - Built [lib/services/app_exception.dart](file:///e:/Abdulrahman/imagineX/lib/services/app_exception.dart) with explicit semantic categories (`network`, `timeout`, `server`, `client`, `rateLimit`, `parse`, `storage`, `unknown`) and mapped vector icons.
+2. **Centralized Sanitizer & Interceptor (`ErrorHandler`):**
+   - Built [lib/services/error_handler.dart](file:///e:/Abdulrahman/imagineX/lib/services/error_handler.dart) providing zero-leakage guarantees against internal URLs (`vercel.app`), stack traces, and raw JSON braces.
+   - Restricted raw technical diagnostic logs exclusively to `debugPrint` in `kDebugMode`.
+3. **Elevated UI Feedback Components:**
+   - Built [lib/widgets/app_error_dialog.dart](file:///e:/Abdulrahman/imagineX/lib/widgets/app_error_dialog.dart): High-end modal with category iconography, clear title, human-friendly explanation, and spring "Try Again" / "Dismiss" buttons.
+   - Built [lib/widgets/app_snackbar.dart](file:///e:/Abdulrahman/imagineX/lib/widgets/app_snackbar.dart): Floating capsule toast for subtle notifications.
+4. **Backend Network Hardening (`ApiService`):**
+   - Configured request timeouts (15s template fetch, 20s prompt optimization, 45s slide generation, 40s PPTX compilation) in [lib/services/api_service.dart](file:///e:/Abdulrahman/imagineX/lib/services/api_service.dart).
+   - Wrapped all response decoders with status code gates and re-threw typed `AppException` instances.
+5. **Screen Implementations:**
+   - [lib/screens/template_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/template_screen.dart): Integrated `showAppErrorDialog` with seamless retry on slide generation failure; transformed `FutureBuilder` error view into an interactive retry card.
+   - [lib/screens/home_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/home_screen.dart): Integrated `showAppSnackBar` on prompt optimization and input validation.
+   - [lib/screens/export_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/export_screen.dart): Integrated `showAppErrorDialog` with retry for PPTX compilation failures.
+   - [lib/screens/editor_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/editor_screen.dart) & [lib/screens/history_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/history_screen.dart): Converted all notifications to `showAppSnackBar`.
+6. **Testing & QA Verification:**
+   - Authored unit test suite in [test/error_handler_test.dart](file:///e:/Abdulrahman/imagineX/test/error_handler_test.dart) covering all 7 error mapping and sanitization scenarios (7/7 passed).
+   - Verified `flutter analyze` with **0 errors and 0 warnings**.
+   - Authored technical spec in [docs/qa/error_handling_architecture.md](file:///e:/Abdulrahman/imagineX/docs/qa/error_handling_architecture.md).
+
+
 
 

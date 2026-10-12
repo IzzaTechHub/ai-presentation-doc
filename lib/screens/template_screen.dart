@@ -6,6 +6,8 @@ import 'package:shimmer/shimmer.dart';
 import '../models/template_model.dart';
 import '../services/api_service.dart';
 import '../services/app_state.dart';
+import '../services/error_handler.dart';
+import '../widgets/app_error_dialog.dart';
 import '../widgets/floating_bottom_bar.dart';
 import '../widgets/interactive_bounce.dart';
 import '../theme/app_theme.dart';
@@ -91,33 +93,16 @@ class _TemplateScreenState extends State<TemplateScreen> {
         );
       }
     } catch (e) {
-      // Dismiss dialog
+      // Dismiss progress dialog
       if (mounted) Navigator.pop(context);
 
-      // Show alert error dialog
+      // Show elevated, user-friendly error dialog
       if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            backgroundColor: AppColors.surface,
-            title: Text(
-              "Generation Failed",
-              style: GoogleFonts.outfit(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-            ),
-            content: Text(
-              e.toString().replaceAll("Exception: ", ""),
-              style: GoogleFonts.inter(color: AppColors.textSecondary),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  "OK",
-                  style: GoogleFonts.inter(color: AppColors.primary, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
+        final appError = ErrorHandler.parse(e);
+        showAppErrorDialog(
+          context,
+          error: appError,
+          onRetry: _generateSlides,
         );
       }
     }
@@ -220,7 +205,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return _buildShimmerGrid();
                     } else if (snapshot.hasError) {
-                      return _buildErrorState(snapshot.error.toString());
+                      return _buildErrorState(snapshot.error);
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Center(
                         child: Text(
@@ -342,51 +327,75 @@ class _TemplateScreenState extends State<TemplateScreen> {
   }
 
   // Error fetching state UI
-  Widget _buildErrorState(String message) {
+  Widget _buildErrorState(dynamic error) {
+    final appError = ErrorHandler.parse(error);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              color: AppColors.error,
-              size: 48,
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: AppColors.primaryContainer,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.primaryBorder, width: 1.5),
+              ),
+              child: Icon(
+                appError.icon,
+                color: AppColors.primary,
+                size: 28,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
             Text(
-              "Unable to load templates",
+              appError.title,
               style: GoogleFonts.outfit(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              message.replaceAll("Exception: ", ""),
+              appError.message,
               style: GoogleFonts.inter(
                 fontSize: 13,
                 color: AppColors.textSecondary,
+                height: 1.4,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(120, 44),
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () {
+            InteractiveBounce(
+              onTap: () {
                 setState(() {
                   _templatesFuture = ApiService.fetchTemplates();
                 });
               },
-              child: Text(
-                "Retry Connection",
-                style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.25),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  "Retry Connection",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    fontSize: 13,
+                  ),
+                ),
               ),
             ),
           ],
