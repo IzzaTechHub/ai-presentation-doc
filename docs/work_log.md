@@ -80,5 +80,22 @@
    - `flutter analyze` verified with **0 errors and 0 warnings**.
 
 ### Next Roadmap Items
-- Commit and push all changes upstream to GitHub `origin/main`.
+- Synchronize future backend enhancements between `e:\Abdulrahman\ppt_mobile\backend` and the client app.
+
+---
+
+## Backend Isolation & Architecture Decoupling
+
+- **Date:** 2026-10-12
+- **Objective:** Isolate the dedicated Vercel Node.js backend inside `e:\Abdulrahman\ppt_mobile` and purge the redundant legacy Flutter application from that directory.
+
+### Completed Tasks
+1. **Directory Inspection & Cleanup:**
+   - Inspected `e:\Abdulrahman\ppt_mobile` which housed both the Node.js Vercel backend and a legacy Flutter codebase.
+   - Permanently deleted `e:\Abdulrahman\ppt_mobile\flutter_app` while strictly preserving `e:\Abdulrahman\ppt_mobile\backend` (Express, Groq/Gemini generation, templates, `vercel.json`).
+   - Cleaned git tracking in `ppt_mobile` (`backend-ppt.git`) to reflect the dedicated backend architecture.
+2. **Architecture Status:**
+   - **Frontend App:** Standalone Flutter client in `imagineX` (`e:\Abdulrahman\imagineX`) targeting `ai-presentation-backend.vercel.app`.
+   - **Backend Service:** Standalone Node.js service in `e:\Abdulrahman\ppt_mobile\backend` for serverless Vercel deployment.
+
 
