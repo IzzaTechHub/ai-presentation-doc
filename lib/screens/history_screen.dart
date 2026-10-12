@@ -462,23 +462,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
         ),
 
-        // 2-Column Visual Grid
+        // Full-Width Presentation Cards List
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 96),
-          sliver: SliverGrid(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 14,
-              mainAxisSpacing: 14,
-              childAspectRatio: 0.69,
-            ),
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final item = AppState.history[index];
-                return _buildHistoryCard(item, index);
-              },
-              childCount: AppState.history.length,
-            ),
+          sliver: SliverList.separated(
+            itemCount: AppState.history.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 16),
+            itemBuilder: (context, index) {
+              final item = AppState.history[index];
+              return _buildHistoryCard(item, index);
+            },
           ),
         ),
       ],
@@ -553,12 +546,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final formattedDate = _formatDate(item['timestamp'] as String?);
 
     return InteractiveBounce(
-      scaleFactor: 0.97,
+      scaleFactor: 0.98,
       onTap: () => _loadPresentation(item),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: AppColors.surfaceBorder,
             width: 1.2,
@@ -566,16 +559,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
+              blurRadius: 16,
               offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.04),
+              blurRadius: 14,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // 16:9 Presentation Slide Preview on Top
+            // 16:9 Presentation Slide Preview on Top (Full Card Width)
             AspectRatio(
               aspectRatio: 16 / 9,
               child: _buildMiniSlidePreview(
@@ -591,88 +590,131 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ),
 
             // Card Bottom Metadata & Actions
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Deck Title & Metadata Chips
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          topic,
-                          style: GoogleFonts.outfit(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
-                            height: 1.25,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 6),
-                        Wrap(
-                          spacing: 4,
-                          runSpacing: 4,
-                          children: [
-                            _buildMiniBadge(
-                              label: "$slideCount slides",
-                              icon: Icons.layers_outlined,
-                              color: AppColors.primary,
-                              bgColor: AppColors.primaryContainer,
-                            ),
-                            _buildMiniBadge(
-                              label: templateName,
-                              icon: null,
-                              color: accentColor,
-                              bgColor: accentColor.withValues(alpha: 0.12),
-                            ),
-                          ],
-                        ),
-                      ],
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Presentation Topic Title
+                  Text(
+                    topic,
+                    style: GoogleFonts.outfit(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                      letterSpacing: -0.3,
+                      height: 1.3,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 10),
 
-                    // Timestamp & Delete Action
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Text(
+                  // Metadata Badges Row
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: [
+                      _buildMiniBadge(
+                        label: "$slideCount slides",
+                        icon: Icons.layers_outlined,
+                        color: AppColors.primary,
+                        bgColor: AppColors.primaryContainer,
+                      ),
+                      _buildMiniBadge(
+                        label: templateName,
+                        icon: Icons.palette_outlined,
+                        color: accentColor,
+                        bgColor: accentColor.withValues(alpha: 0.12),
+                      ),
+                      _buildMiniBadge(
+                        label: "16:9 PPTX",
+                        icon: Icons.slideshow_rounded,
+                        color: AppColors.textSecondary,
+                        bgColor: AppColors.inputFill,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Subtle Divider
+                  const Divider(height: 1, thickness: 1, color: AppColors.surfaceBorderSubtle),
+                  const SizedBox(height: 12),
+
+                  // Bottom Action Row: Timestamp & Actions
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.schedule_rounded,
+                            size: 14,
+                            color: AppColors.textMuted,
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
                             formattedDate,
                             style: GoogleFonts.inter(
-                              fontSize: 10,
+                              fontSize: 12,
                               fontWeight: FontWeight.w500,
                               color: AppColors.textMuted,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                        InteractiveBounce(
-                          scaleFactor: 0.88,
-                          onTap: () => _confirmDelete(context, id, topic),
-                          child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: const BoxDecoration(
-                              color: AppColors.errorContainer,
-                              shape: BoxShape.circle,
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          // Open Deck Pill
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryContainer,
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(
-                              Icons.delete_outline_rounded,
-                              color: AppColors.error,
-                              size: 15,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Open",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 14,
+                                  color: AppColors.primary,
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                          const SizedBox(width: 8),
+                          // Trash Delete Button
+                          InteractiveBounce(
+                            scaleFactor: 0.88,
+                            onTap: () => _confirmDelete(context, id, topic),
+                            child: Container(
+                              padding: const EdgeInsets.all(7),
+                              decoration: BoxDecoration(
+                                color: AppColors.errorContainer,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.delete_outline_rounded,
+                                color: AppColors.error,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],
@@ -681,9 +723,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
     ).animate().fadeIn(
       delay: (index * 45).ms,
       duration: 320.ms,
-    ).scale(
-      begin: const Offset(0.96, 0.96),
-      end: const Offset(1, 1),
+    ).slideY(
+      begin: 0.06,
+      end: 0,
       curve: Curves.easeOutCubic,
     );
   }
@@ -721,10 +763,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ),
       child: Stack(
         children: [
-
           // Slide Content
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -733,10 +774,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.35),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(5),
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.15),
                           width: 0.5,
@@ -746,20 +787,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            width: 4,
-                            height: 4,
+                            width: 5,
+                            height: 5,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: accentColor,
                             ),
                           ),
-                          const SizedBox(width: 3),
+                          const SizedBox(width: 4),
                           Text(
-                            "DECK",
+                            "AI DECK",
                             style: GoogleFonts.inter(
-                              fontSize: 7.5,
+                              fontSize: 9,
                               fontWeight: FontWeight.w700,
-                              color: Colors.white.withValues(alpha: 0.9),
+                              color: Colors.white.withValues(alpha: 0.95),
                               letterSpacing: 0.5,
                             ),
                           ),
@@ -767,50 +808,50 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1.5),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.25),
-                        borderRadius: BorderRadius.circular(3),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        "16:9",
+                        "16:9 Widescreen",
                         style: GoogleFonts.inter(
-                          fontSize: 7,
+                          fontSize: 9,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white.withValues(alpha: 0.75),
+                          color: Colors.white.withValues(alpha: 0.8),
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 8),
 
                 // Slide Title
                 Text(
                   slideTitle,
                   style: GoogleFonts.outfit(
-                    fontSize: 10,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: titleColor,
-                    height: 1.2,
+                    height: 1.25,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
 
-                const SizedBox(height: 3),
+                const SizedBox(height: 5),
 
                 // Accent Underline Bar
                 Container(
-                  width: 18,
-                  height: 1.5,
+                  width: 28,
+                  height: 2,
                   decoration: BoxDecoration(
                     color: accentColor,
-                    borderRadius: BorderRadius.circular(1),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
 
-                const SizedBox(height: 5),
+                const SizedBox(height: 8),
 
                 // Miniature Bullets preview or layout representation
                 Expanded(
@@ -825,23 +866,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             if (bullets.isNotEmpty) ...[
                               _buildMiniBulletItem(bullets[0], bodyColor, accentColor),
                               if (bullets.length > 1) ...[
-                                const SizedBox(height: 3),
+                                const SizedBox(height: 4),
                                 _buildMiniBulletItem(bullets[1], bodyColor, accentColor),
+                              ],
+                              if (bullets.length > 2) ...[
+                                const SizedBox(height: 4),
+                                _buildMiniBulletItem(bullets[2], bodyColor, accentColor),
                               ],
                             ] else ...[
                               // Skeleton preview bars
                               Container(
-                                height: 3.5,
+                                height: 4,
                                 width: double.infinity,
                                 decoration: BoxDecoration(
                                   color: bodyColor.withValues(alpha: 0.35),
                                   borderRadius: BorderRadius.circular(2),
                                 ),
                               ),
-                              const SizedBox(height: 3),
+                              const SizedBox(height: 4),
                               Container(
-                                height: 3.5,
-                                width: 50,
+                                height: 4,
+                                width: 100,
                                 decoration: BoxDecoration(
                                   color: bodyColor.withValues(alpha: 0.25),
                                   borderRadius: BorderRadius.circular(2),
@@ -852,13 +897,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ),
                       ),
                       if (hasImage) ...[
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 10),
                         Container(
-                          width: 24,
-                          height: 24,
+                          width: 36,
+                          height: 36,
                           decoration: BoxDecoration(
                             color: accentColor.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(6),
                             border: Border.all(
                               color: accentColor.withValues(alpha: 0.4),
                               width: 0.5,
@@ -866,7 +911,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ),
                           child: Icon(
                             Icons.image_outlined,
-                            size: 13,
+                            size: 18,
                             color: accentColor,
                           ),
                         ),
@@ -898,21 +943,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          width: 3,
-          height: 3,
+          width: 4,
+          height: 4,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: accentColor,
           ),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 5),
         Expanded(
           child: Text(
             text,
             style: GoogleFonts.inter(
-              fontSize: 7.5,
-              color: bodyColor.withValues(alpha: 0.85),
-              height: 1.15,
+              fontSize: 10,
+              color: bodyColor.withValues(alpha: 0.9),
+              height: 1.2,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -929,7 +974,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     required Color bgColor,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(6),
@@ -938,13 +983,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 10, color: color),
-            const SizedBox(width: 3),
+            Icon(icon, size: 11, color: color),
+            const SizedBox(width: 3.5),
           ],
           Text(
             label,
             style: GoogleFonts.inter(
-              fontSize: 9.5,
+              fontSize: 10.5,
               fontWeight: FontWeight.w600,
               color: color,
             ),

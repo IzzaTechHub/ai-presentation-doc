@@ -266,3 +266,27 @@
    - `flutter analyze` executed: **0 errors, 0 warnings**.
    - `flutter test` executed: **All 14 tests passing**.
    - Documentation updated in [docs/ui/light_theme_design.md](file:///e:/Abdulrahman/imagineX/docs/ui/light_theme_design.md).
+
+---
+
+## Full-Width Presentation Cards Layout Overhaul
+
+- **Date:** 2026-10-12
+- **Objective:** Redesign the presentation vault cards to span the full screen width rather than being compressed into a 2-column grid.
+
+### Completed Tasks
+1. **Layout Architecture Transformation ([lib/screens/history_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/history_screen.dart)):**
+   - Replaced 2-column `SliverGrid` (`crossAxisCount: 2`) with full-width `SliverList.separated` (`separatorBuilder: SizedBox(height: 16)`).
+   - Each card now spans the full width of the screen (`100% width` with standard 20px padding matching the top banner).
+2. **Proportionate 16:9 Widescreen Miniature Slide Preview:**
+   - Enlarged top presentation slide preview to full card width while preserving true `16:9` widescreen aspect ratio.
+   - Scaled typography and elements proportionally: 14px bold title, 28px accent bar, and legible bullet points (up to 3 bullets) or media preview icon.
+3. **Card Bottom Metadata & Actions:**
+   - Presentation topic title rendered in 16px bold Outfit font (`maxLines: 2`).
+   - Metadata badges row: slide count (`"${slideCount} slides"`), template name pill, and `"16:9 PPTX"` format badge.
+   - Action row: Relative timestamp with clock icon, "Open" action button with arrow icon, and confirmation-protected trash delete button.
+4. **Quality Assurance & Verification:**
+   - `flutter analyze` executed: **0 errors, 0 warnings**.
+   - `flutter test` executed: **All 14 unit and integration tests passing**.
+   - Documentation updated in [docs/ui/presentation_history_grid.md](file:///e:/Abdulrahman/imagineX/docs/ui/presentation_history_grid.md).
+
