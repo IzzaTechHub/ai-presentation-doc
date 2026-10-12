@@ -1,8 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'template_screen.dart';
 import '../widgets/floating_bottom_bar.dart';
+import '../widgets/interactive_bounce.dart';
 import '../services/app_state.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
@@ -35,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Please enter a topic or prompt to perfect!"),
-          backgroundColor: Color(0xFFE53935),
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -58,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Prompt optimized with AI!"),
-            backgroundColor: Color(0xFF43A047),
+            backgroundColor: AppColors.success,
             duration: Duration(seconds: 3),
           ),
         );
@@ -73,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Failed to perfect prompt: ${e.toString().replaceAll("Exception: ", "")}"),
-            backgroundColor: const Color(0xFFE53935),
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -95,13 +97,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
-  // Premium feature: suggest sample topics that fill the text field on click
   final List<String> _suggestedTopics = [
-    "Artificial Intelligence",
-    "Climate Change",
-    "Marketing Pitch",
-    "History of Space",
+    "Artificial Intelligence in 2026",
+    "Clean Energy Transition",
+    "Product Launch Pitch",
+    "Deep Tech Investment Thesis",
   ];
 
   @override
@@ -128,7 +128,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -154,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ],
-        ),
+        ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.1, end: 0),
         centerTitle: false,
         backgroundColor: AppColors.background.withValues(alpha: 0.8),
         elevation: 0,
@@ -166,27 +165,45 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () {
+          InteractiveBounce(
+            onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Generate a presentation first to export!")),
               );
             },
-            child: Text(
-              "Export",
-              style: GoogleFonts.inter(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryContainer,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.primaryBorder),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.file_upload_outlined, color: AppColors.primaryLight, size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                      "Export",
+                      style: GoogleFonts.inter(
+                        color: AppColors.primaryLight,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 6),
         ],
       ),
       body: Stack(
         children: [
-          // Background ambient leaks (Radial glow circles in orange)
+          // Background ambient leaks in brand orange with subtle pulsing animation
           Positioned(
             top: -150,
             left: -100,
@@ -201,7 +218,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-          ),
+          ).animate(onPlay: (controller) => controller.repeat(reverse: true))
+           .scaleXY(begin: 1.0, end: 1.08, duration: 4000.ms, curve: Curves.easeInOut),
           Positioned(
             bottom: -150,
             right: -100,
@@ -216,16 +234,51 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-          ),
+          ).animate(onPlay: (controller) => controller.repeat(reverse: true))
+           .scaleXY(begin: 1.08, end: 1.0, duration: 4500.ms, curve: Curves.easeInOut),
+
           // Scrollable main content
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Top Pill Tag
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryContainer,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.primaryBorder),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            "Next-Gen AI Deck Generator",
+                            style: GoogleFonts.inter(
+                              color: AppColors.primaryLight,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.2, end: 0),
+                    const SizedBox(height: 14),
+
                     // Heading Section
                     Text(
                       "Create stunning presentations in seconds.",
@@ -236,44 +289,64 @@ class _HomeScreenState extends State<HomeScreen> {
                         letterSpacing: -0.5,
                         height: 1.2,
                       ),
-                    ),
-                    const SizedBox(height: 10),
+                    ).animate().fadeIn(delay: 100.ms, duration: 450.ms).slideY(begin: 0.2, end: 0),
+                    const SizedBox(height: 8),
                     Text(
-                      "Enter a topic and select the template style to automatically generate custom PowerPoint decks.",
+                      "Enter your topic or outline. SlideAI creates slides with tailored layouts, typography, and imagery.",
                       style: GoogleFonts.inter(
                         fontSize: 14,
-                        color: const Color(0xFFCBC3D7),
+                        color: AppColors.textSecondary,
                         height: 1.4,
                       ),
-                    ),
-                    const SizedBox(height: 36),
+                    ).animate().fadeIn(delay: 150.ms, duration: 450.ms).slideY(begin: 0.2, end: 0),
+                    const SizedBox(height: 28),
 
                     // Glassmorphic interactive form area
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(22),
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
                         child: Container(
-                          padding: const EdgeInsets.all(24.0),
+                          padding: const EdgeInsets.all(22.0),
                           decoration: BoxDecoration(
-                            color: AppColors.surface.withValues(alpha: 0.65),
-                            borderRadius: BorderRadius.circular(20),
+                            color: AppColors.surface.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(22),
                             border: Border.all(
                               color: AppColors.surfaceBorder,
-                              width: 1.0,
+                              width: 1.2,
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.3),
+                                blurRadius: 20,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // Topic Input Label
-                              Text(
-                                "Topic or Detailed Prompt",
-                                style: GoogleFonts.inter(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Topic or Detailed Prompt",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Required",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.textMuted,
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 12),
 
@@ -289,19 +362,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                   return null;
                                 },
                                 decoration: InputDecoration(
-                                  hintText: "e.g. Enter a topic, or type a custom prompt and click 'Perfect Prompt' below...",
+                                  hintText: "e.g. Future of Quantum Computing, or pitch deck for a SaaS startup...",
                                   alignLabelWithHint: true,
                                   fillColor: AppColors.inputFill,
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(14),
                                     borderSide: const BorderSide(color: AppColors.surfaceBorder),
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(14),
                                     borderSide: const BorderSide(color: AppColors.surfaceBorder),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(14),
                                     borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                                   ),
                                 ),
@@ -310,12 +383,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   fontSize: 15,
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 14),
 
                               // Perfect Prompt & Undo actions
                               Row(
                                 children: [
-                                  GestureDetector(
+                                  InteractiveBounce(
                                     onTap: _isPerfecting ? null : _perfectPrompt,
                                     child: AnimatedContainer(
                                       duration: const Duration(milliseconds: 200),
@@ -345,6 +418,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ),
                                             ),
                                             const SizedBox(width: 8),
+                                          ] else ...[
+                                            const Icon(
+                                              Icons.auto_fix_high_rounded,
+                                              color: AppColors.primaryLight,
+                                              size: 15,
+                                            ),
+                                            const SizedBox(width: 6),
                                           ],
                                           Text(
                                             _isPerfecting ? "Perfecting..." : "Perfect Prompt",
@@ -360,12 +440,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   if (_previousPrompt != null) ...[
                                     const SizedBox(width: 8),
-                                    GestureDetector(
+                                    InteractiveBounce(
                                       onTap: _undoPerfectPrompt,
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                         decoration: BoxDecoration(
-                                          color: const Color(0x1F757575), // Soft translucent gray bg
+                                          color: const Color(0x1F757575),
                                           borderRadius: BorderRadius.circular(20),
                                           border: Border.all(
                                             color: Colors.white24,
@@ -396,59 +476,156 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ],
                                 ],
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 20),
 
-                              // Suggestions Chips
+                              // Quick Inspiration Chips Label
+                              Text(
+                                "Quick Inspiration",
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textMuted,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+
+                              // Suggestions Chips with stagger
                               Wrap(
                                 spacing: 8,
                                 runSpacing: 8,
-                                children: _suggestedTopics.map((topic) {
-                                  return ActionChip(
-                                    label: Text(
-                                      topic,
-                                      style: GoogleFonts.inter(
-                                        color: const Color(0xFF5DE6FF),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    backgroundColor: const Color(0x1F5DE6FF),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      side: const BorderSide(color: Color(0x335DE6FF), width: 1),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    onPressed: () {
+                                children: List.generate(_suggestedTopics.length, (index) {
+                                  final topic = _suggestedTopics[index];
+                                  return InteractiveBounce(
+                                    scaleFactor: 0.94,
+                                    onTap: () {
                                       setState(() {
                                         _topicController.text = topic;
                                       });
                                     },
-                                  );
-                                }).toList(),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primaryContainer.withValues(alpha: 0.6),
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: AppColors.primaryBorder,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.lightbulb_outline_rounded,
+                                            color: AppColors.primaryLight,
+                                            size: 14,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            topic,
+                                            style: GoogleFonts.inter(
+                                              color: AppColors.primaryLight,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ).animate().fadeIn(
+                                    delay: (200 + index * 50).ms,
+                                    duration: 350.ms,
+                                  ).slideX(begin: 0.1, end: 0);
+                                }),
                               ),
-                              const SizedBox(height: 32),
+                              const SizedBox(height: 28),
 
                               // Slide Count Label / Value Row
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    "Number of Slides",
-                                    style: GoogleFonts.inter(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textSecondary,
-                                    ),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.view_carousel_outlined,
+                                        color: AppColors.textSecondary,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        "Slide Deck Length",
+                                        style: GoogleFonts.inter(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    "$_slideCount",
-                                    style: GoogleFonts.inter(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppColors.primary.withValues(alpha: 0.4),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Text(
+                                      "$_slideCount slides",
+                                      style: GoogleFonts.inter(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ],
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Quick Slide Count Preset Pills
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [5, 8, 10, 15, 20].map((preset) {
+                                  final isCurrent = _slideCount == preset;
+                                  return InteractiveBounce(
+                                    scaleFactor: 0.9,
+                                    onTap: () {
+                                      setState(() {
+                                        _slideCount = preset;
+                                      });
+                                    },
+                                    child: AnimatedContainer(
+                                      duration: const Duration(milliseconds: 200),
+                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: isCurrent
+                                            ? AppColors.primary
+                                            : AppColors.surfaceBorderSubtle,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: isCurrent
+                                              ? AppColors.primaryLight
+                                              : AppColors.surfaceBorder,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "$preset",
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12,
+                                          fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w500,
+                                          color: isCurrent ? Colors.white : AppColors.textSecondary,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
                               ),
                               const SizedBox(height: 12),
 
@@ -483,37 +660,38 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      "Brief (4)",
+                                      "Concise (4)",
                                       style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted),
                                     ),
                                     Text(
-                                      "Comprehensive (20)",
+                                      "In-Depth (20)",
                                       style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted),
                                     ),
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 36),
+                              const SizedBox(height: 32),
 
-                              // Gradient "Choose Design Template" Action Button
-                              GestureDetector(
+                              // Glowing Action Button
+                              InteractiveBounce(
+                                scaleFactor: 0.97,
                                 onTap: _submit,
                                 child: Container(
                                   width: double.infinity,
-                                  height: 52,
+                                  height: 54,
                                   decoration: BoxDecoration(
                                     gradient: const LinearGradient(
                                       colors: [AppColors.primary, AppColors.primaryDark],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                     ),
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(14),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: AppColors.primary.withValues(alpha: 0.35),
-                                        blurRadius: 16,
-                                        offset: const Offset(0, 4),
-                                      )
+                                        color: AppColors.primary.withValues(alpha: 0.45),
+                                        blurRadius: 20,
+                                        offset: const Offset(0, 6),
+                                      ),
                                     ],
                                   ),
                                   alignment: Alignment.center,
@@ -539,6 +717,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
+                    ).animate().fadeIn(delay: 200.ms, duration: 500.ms).scale(
+                      begin: const Offset(0.97, 0.97),
+                      end: const Offset(1, 1),
+                      curve: Curves.easeOutBack,
                     ),
                   ],
                 ),

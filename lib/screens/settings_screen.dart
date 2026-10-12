@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import '../widgets/floating_bottom_bar.dart';
+import '../widgets/interactive_bounce.dart';
 import '../theme/app_theme.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -71,7 +73,7 @@ class SettingsScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(22),
                     border: Border.all(
                       color: AppColors.surfaceBorder,
                       width: 1.0,
@@ -80,6 +82,11 @@ class SettingsScreen extends StatelessWidget {
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.25),
                         blurRadius: 16,
+                        offset: const Offset(0, 4),
+                      ),
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.08),
+                        blurRadius: 20,
                         offset: const Offset(0, 4),
                       ),
                     ],
@@ -139,7 +146,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
+                ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.15, end: 0, curve: Curves.easeOutCubic),
                 const SizedBox(height: 24),
 
                 Text(
@@ -206,14 +213,21 @@ class SettingsScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: AppColors.surfaceBorder,
           width: 1.0,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: child,
-    );
+    ).animate().fadeIn(delay: 150.ms, duration: 400.ms).slideY(begin: 0.12, end: 0, curve: Curves.easeOutCubic);
   }
 
   Widget _buildSettingItem({
@@ -223,8 +237,15 @@ class SettingsScreen extends StatelessWidget {
     Widget? trailing,
     VoidCallback? onTap,
   }) {
-    return ListTile(
-      leading: Icon(icon, color: AppColors.primary),
+    final tile = ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: AppColors.primaryContainer,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, color: AppColors.primaryLight, size: 20),
+      ),
       title: Text(
         title,
         style: GoogleFonts.inter(
@@ -245,10 +266,20 @@ class SettingsScreen extends StatelessWidget {
           (onTap != null
               ? const Icon(
                   Icons.chevron_right_rounded,
-                  color: AppColors.primary,
+                  color: AppColors.primaryLight,
+                  size: 20,
                 )
               : null),
       onTap: onTap,
     );
+
+    if (onTap != null) {
+      return InteractiveBounce(
+        scaleFactor: 0.98,
+        onTap: onTap,
+        child: tile,
+      );
+    }
+    return tile;
   }
 }

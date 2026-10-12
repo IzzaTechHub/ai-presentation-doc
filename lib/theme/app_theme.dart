@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Centralized application color palette and theme definition
@@ -12,12 +13,32 @@ class AppColors {
   static const Color primaryBorder = Color(0x40FF5722); // 25% Translucent Border
   static const Color secondary = Color(0xFFFF8A50); // Coral Accent
 
-  // True Deep Neutrals (Charcoal / Zinc)
+  // True Deep Neutrals (Charcoal / Zinc / Slate)
   static const Color background = Color(0xFF0E1015); // Deep Charcoal Scaffold
   static const Color surface = Color(0xFF151821); // Card Surface
   static const Color surfaceElevated = Color(0xFF1D212E); // Modal & Dialog Surface
   static const Color surfaceBorder = Color(0x1AFFFFFF); // 10% White Border
+  static const Color surfaceBorderSubtle = Color(0x0FFFFFFF); // 6% White Border
   static const Color inputFill = Color(0x0DFFFFFF); // 5% White Glass Input
+
+  // High-End Gradients
+  static const LinearGradient orangeGradient = LinearGradient(
+    colors: [primary, primaryDark],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient orangeGlowGradient = LinearGradient(
+    colors: [primaryLight, primary],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
+
+  static const LinearGradient glassCardGradient = LinearGradient(
+    colors: [Color(0x1F252A38), Color(0x12151821)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 
   // High-Contrast Typography
   static const Color textPrimary = Color(0xFFF8FAFC); // Crisp Off-White
@@ -45,6 +66,15 @@ class AppTheme {
       ),
       fontFamily: GoogleFonts.inter().fontFamily,
       scaffoldBackgroundColor: AppColors.background,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.windows: ZoomPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.linux: ZoomPageTransitionsBuilder(),
+        },
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.background.withValues(alpha: 0.85),
         elevation: 0,
@@ -57,19 +87,27 @@ class AppTheme {
           letterSpacing: -0.5,
         ),
       ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppColors.surfaceElevated,
+        elevation: 24,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: AppColors.surfaceBorder, width: 1),
+        ),
+      ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.inputFill,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.surfaceBorder, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.surfaceBorder, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
         hintStyle: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14),
@@ -82,7 +120,7 @@ class AppTheme {
           elevation: 0,
           minimumSize: const Size(double.infinity, 52),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
           textStyle: GoogleFonts.inter(
             fontSize: 16,

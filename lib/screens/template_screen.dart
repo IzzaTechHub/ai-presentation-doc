@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 import '../models/template_model.dart';
 import '../services/api_service.dart';
 import '../services/app_state.dart';
 import '../widgets/floating_bottom_bar.dart';
+import '../widgets/interactive_bounce.dart';
 import '../theme/app_theme.dart';
 import 'editor_screen.dart';
 
@@ -44,46 +47,12 @@ class _TemplateScreenState extends State<TemplateScreen> {
   void _generateSlides() async {
     if (_selectedTemplate == null) return;
 
-    // Show custom visual dark full-screen loading dialog
+    // Show elite multi-phase futuristic loading dialog
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: AppColors.surfaceElevated,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  "AI is generating your slides...",
-                  style: GoogleFonts.outfit(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Structuring content, layout options, and speaker notes.",
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: const Color(0xFFCBC3D7),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        );
+        return const _GenerationProgressDialog();
       },
     );
 
@@ -283,36 +252,40 @@ class _TemplateScreenState extends State<TemplateScreen> {
                           },
                           parseHex: _parseHex,
                           topic: widget.topic,
-                        );
+                        ).animate().fadeIn(
+                          delay: (index * 70).ms,
+                          duration: 400.ms,
+                        ).slideY(begin: 0.12, end: 0, curve: Curves.easeOutCubic);
                       },
                     );
                   },
                 ),
               ),
 
-              // Bottom Action Button with premium gradient background
+              // Bottom Action Button with premium gradient background & InteractiveBounce
               Padding(
                 padding: const EdgeInsets.all(24.0),
-                child: GestureDetector(
+                child: InteractiveBounce(
+                  scaleFactor: 0.97,
                   onTap: _selectedTemplate != null ? _generateSlides : null,
                   child: Opacity(
                     opacity: _selectedTemplate != null ? 1.0 : 0.6,
                     child: Container(
                       width: double.infinity,
-                      height: 52,
+                      height: 54,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [AppColors.primary, AppColors.primaryDark],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(14),
                         boxShadow: _selectedTemplate != null
                             ? [
                                 BoxShadow(
-                                  color: AppColors.primary.withValues(alpha: 0.35),
-                                  blurRadius: 16,
-                                  offset: const Offset(0, 4),
+                                  color: AppColors.primary.withValues(alpha: 0.45),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 6),
                                 )
                               ]
                             : null,
@@ -627,7 +600,8 @@ class TemplateListItem extends StatelessWidget {
       ),
     );
 
-    return GestureDetector(
+    return InteractiveBounce(
+      scaleFactor: 0.98,
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -984,5 +958,168 @@ class TemplateListItem extends StatelessWidget {
     } catch (_) {
       return textStyle;
     }
+  }
+}
+
+class _GenerationProgressDialog extends StatefulWidget {
+  const _GenerationProgressDialog();
+
+  @override
+  State<_GenerationProgressDialog> createState() => _GenerationProgressDialogState();
+}
+
+class _GenerationProgressDialogState extends State<_GenerationProgressDialog> {
+  int _currentPhase = 0;
+  Timer? _timer;
+
+  final List<(String, String)> _phases = const [
+    ("Analyzing Outline", "Extracting core themes and structural hierarchy..."),
+    ("Synthesizing Layouts", "Formulating multi-column cards, bullet lists, and metrics..."),
+    ("Harmonizing Aesthetics", "Applying typography, brand tokens, and color contrast..."),
+    ("Generating Deck", "Compiling slides and speaker notes..."),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(milliseconds: 1400), (timer) {
+      if (mounted) {
+        setState(() {
+          _currentPhase = (_currentPhase + 1) % _phases.length;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final (title, subtitle) = _phases[_currentPhase];
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Container(
+        padding: const EdgeInsets.all(28.0),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceElevated,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.surfaceBorder, width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.5),
+              blurRadius: 30,
+              offset: const Offset(0, 12),
+            ),
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.15),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Glowing Pulsing Spinner Container
+            Container(
+              width: 68,
+              height: 68,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primaryContainer,
+                border: Border.all(
+                  color: AppColors.primaryBorder,
+                  width: 1.5,
+                ),
+              ),
+              child: const Center(
+                child: SizedBox(
+                  width: 34,
+                  height: 34,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  ),
+                ),
+              ),
+            ).animate(onPlay: (controller) => controller.repeat(reverse: true))
+             .scaleXY(begin: 0.98, end: 1.05, duration: 1200.ms, curve: Curves.easeInOut),
+            const SizedBox(height: 24),
+
+            // Animated Header Title
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 0.2),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                ),
+              ),
+              child: Text(
+                title,
+                key: ValueKey<int>(_currentPhase),
+                style: GoogleFonts.outfit(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  letterSpacing: -0.3,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Animated Subtitle Description
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: Text(
+                subtitle,
+                key: ValueKey<String>(subtitle),
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Progress Step Indicators
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(_phases.length, (index) {
+                final isPassed = index <= _currentPhase;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: index == _currentPhase ? 20 : 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: isPassed ? AppColors.primary : AppColors.surfaceBorder,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    ).animate().fadeIn(duration: 250.ms).scale(
+      begin: const Offset(0.94, 0.94),
+      end: const Offset(1, 1),
+      curve: Curves.easeOutBack,
+    );
   }
 }

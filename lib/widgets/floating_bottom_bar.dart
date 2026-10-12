@@ -1,11 +1,13 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../screens/home_screen.dart';
 import '../screens/editor_screen.dart';
 import '../screens/history_screen.dart';
 import '../screens/settings_screen.dart';
 import '../services/app_state.dart';
-
 import '../theme/app_theme.dart';
+import 'interactive_bounce.dart';
 
 class FloatingBottomBar extends StatelessWidget {
   final int currentTabIndex;
@@ -38,7 +40,6 @@ class FloatingBottomBar extends StatelessWidget {
         break;
     }
 
-    // Navigate to target screen without transitions to make it feel like a tab switch
     Navigator.pushAndRemoveUntil(
       context,
       PageRouteBuilder(
@@ -52,63 +53,109 @@ class FloatingBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tabs = [
+      (Icons.folder_open_rounded, "Vault"),
+      (Icons.add_circle_outline_rounded, "Create"),
+      (Icons.slideshow_rounded, "Editor"),
+      (Icons.settings_outlined, "Settings"),
+    ];
+
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 12.0, left: 16.0, right: 16.0),
-        child: Container(
-          height: 60,
-          decoration: BoxDecoration(
-            color: AppColors.surfaceElevated,
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: AppColors.surfaceBorder, width: 1.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.35),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+        padding: const EdgeInsets.only(bottom: 12.0, left: 20.0, right: 20.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(32),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              height: 64,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceElevated.withValues(alpha: 0.85),
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(
+                  color: AppColors.surfaceBorder,
+                  width: 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.45),
+                    blurRadius: 24,
+                    offset: const Offset(0, 10),
+                  ),
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildTabItem(context, 0, Icons.folder_open_rounded),
-              _buildTabItem(context, 1, Icons.add_circle_rounded),
-              _buildTabItem(context, 2, Icons.slideshow_rounded),
-              _buildTabItem(context, 3, Icons.settings_rounded),
-            ],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(tabs.length, (index) {
+                  final isSelected = index == currentTabIndex;
+                  final (icon, label) = tabs[index];
+                  return _buildTabItem(context, index, icon, label, isSelected);
+                }),
+              ),
+            ),
           ),
         ),
       ),
-    );
+    ).animate().fadeIn(duration: 350.ms).slideY(begin: 0.3, end: 0, curve: Curves.easeOutCubic);
   }
 
-  Widget _buildTabItem(BuildContext context, int index, IconData icon) {
-    final isSelected = index == currentTabIndex;
-
-    return GestureDetector(
+  Widget _buildTabItem(
+    BuildContext context,
+    int index,
+    IconData icon,
+    String label,
+    bool isSelected,
+  ) {
+    return InteractiveBounce(
+      scaleFactor: 0.92,
       onTap: () => _onTabTapped(context, index),
-      behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOutCubic,
+        padding: EdgeInsets.symmetric(
+          horizontal: isSelected ? 16 : 12,
+          vertical: 8,
+        ),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(22),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.35),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
+                    color: AppColors.primary.withValues(alpha: 0.4),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
                   ),
                 ]
               : null,
         ),
-        child: Icon(
-          icon,
-          color: isSelected ? Colors.white : AppColors.textMuted,
-          size: 24,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.white : AppColors.textMuted,
+              size: 22,
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );

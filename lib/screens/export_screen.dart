@@ -1,9 +1,12 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/slide_model.dart';
 import '../services/api_service.dart';
 import '../services/file_service.dart';
 import '../widgets/floating_bottom_bar.dart';
+import '../widgets/interactive_bounce.dart';
 import '../theme/app_theme.dart';
 
 class ExportScreen extends StatefulWidget {
@@ -31,7 +34,6 @@ class _ExportScreenState extends State<ExportScreen> {
     });
 
     try {
-      // 1. Fetch compiled binary buffer from backend API
       final bytes = await ApiService.generatePPTX(
         slides: widget.slides,
         templateId: widget.templateId,
@@ -41,26 +43,23 @@ class _ExportScreenState extends State<ExportScreen> {
         _loadingMessage = "Writing presentation to storage...";
       });
 
-      // Define default name using timestamp
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final filename = "presentation_$timestamp.pptx";
 
-      // 2. Save binary bytes locally on device
       final savedPath = await FileService.saveFileToDownloads(bytes, filename);
 
       if (mounted) {
-        // Show success green notification snackbar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: const Color(0xFF43A047), // Success green
+            backgroundColor: AppColors.success,
             content: Row(
               children: [
-                const Icon(Icons.check_circle_outline, color: Color(0xFFFFFFFF)),
+                const Icon(Icons.check_circle_outline, color: Colors.white),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     "Saved to Downloads!\nPath: $savedPath",
-                    style: const TextStyle(color: Color(0xFFFFFFFF), fontSize: 13),
+                    style: const TextStyle(color: Colors.white, fontSize: 13),
                   ),
                 ),
               ],
@@ -73,7 +72,7 @@ class _ExportScreenState extends State<ExportScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: const Color(0xFFE53935), // Error red
+            backgroundColor: AppColors.error,
             content: Text("Download failed: ${e.toString().replaceAll("Exception: ", "")}"),
           ),
         );
@@ -93,7 +92,12 @@ class _ExportScreenState extends State<ExportScreen> {
       appBar: AppBar(
         title: Text(
           "Export Deck",
-          style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: AppColors.primary),
+          style: GoogleFonts.outfit(
+            fontWeight: FontWeight.w700,
+            color: AppColors.primary,
+            fontSize: 22,
+            letterSpacing: -0.5,
+          ),
         ),
         backgroundColor: AppColors.background.withValues(alpha: 0.8),
         elevation: 0,
@@ -139,113 +143,188 @@ class _ExportScreenState extends State<ExportScreen> {
             ),
           ),
           // Main Body Export controls
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Header success card icon
-                const Icon(
-                  Icons.task_alt_rounded,
-                  color: AppColors.success,
-                  size: 64,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  "Presentation Ready!",
-                  style: GoogleFonts.outfit(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                    letterSpacing: -0.5,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Your presentation deck has been successfully formatted. Choose your preferred export file type below.",
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                    height: 1.4,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 48),
-
-                // Button 1: Download PPTX
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppColors.surfaceBorder,
-                      width: 1.0,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 16,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: InkWell(
-                    onTap: _isLoading ? null : _downloadPPTX,
-                    borderRadius: BorderRadius.circular(16),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.slideshow_rounded, color: AppColors.primary, size: 36),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Download PPTX",
-                                  style: GoogleFonts.inter(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  "Save editable PowerPoint presentation",
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Animated Header Success Badge
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(22),
+                      decoration: BoxDecoration(
+                        color: const Color(0x1A10B981),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color(0x4010B981),
+                          width: 2.0,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF10B981).withValues(alpha: 0.2),
+                            blurRadius: 24,
+                            spreadRadius: 4,
                           ),
-                          const Icon(Icons.download_rounded, color: AppColors.primary),
                         ],
                       ),
+                      child: const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.success,
+                        size: 52,
+                      ),
                     ),
+                  ).animate().fadeIn(duration: 400.ms).scale(
+                    begin: const Offset(0.7, 0.7),
+                    end: const Offset(1, 1),
+                    curve: Curves.easeOutBack,
                   ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+
+                  Text(
+                    "Presentation Ready",
+                    style: GoogleFonts.outfit(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ).animate().fadeIn(delay: 100.ms, duration: 400.ms),
+                  const SizedBox(height: 8),
+
+                  Text(
+                    "Your slide deck has been compiled with layouts, content, and high-resolution visuals. Export directly as a PowerPoint file.",
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.center,
+                  ).animate().fadeIn(delay: 150.ms, duration: 400.ms),
+                  const SizedBox(height: 32),
+
+                  // Deck Summary Card
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.surfaceBorder,
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildSpecColumn(Icons.slideshow_rounded, "${widget.slides.length}", "Total Slides"),
+                        Container(width: 1, height: 36, color: AppColors.surfaceBorder),
+                        _buildSpecColumn(Icons.style_outlined, widget.templateId.toUpperCase(), "Template"),
+                        Container(width: 1, height: 36, color: AppColors.surfaceBorder),
+                        _buildSpecColumn(Icons.file_present_rounded, "PPTX", "Format"),
+                      ],
+                    ),
+                  ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+                  const SizedBox(height: 24),
+
+                  // Button 1: Download PPTX
+                  InteractiveBounce(
+                    scaleFactor: 0.96,
+                    onTap: _isLoading ? null : _downloadPPTX,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceElevated,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.primaryBorder,
+                          width: 1.2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            blurRadius: 18,
+                            offset: const Offset(0, 6),
+                          ),
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.15),
+                            blurRadius: 16,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 18.0),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryContainer,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: const Icon(Icons.download_rounded, color: AppColors.primaryLight, size: 28),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Download PowerPoint Deck",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    "Export presentation directly to device storage",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              color: AppColors.primaryLight,
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ).animate().fadeIn(delay: 250.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+                ],
+              ),
             ),
           ),
 
           // Loading Dialog Overlay
           if (_isLoading)
             Container(
-              color: Colors.black.withValues(alpha: 0.6),
+              color: Colors.black.withValues(alpha: 0.7),
               alignment: Alignment.center,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.surfaceBorder, width: 1.0),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 36),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 36),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceElevated,
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: AppColors.surfaceBorder, width: 1.2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        blurRadius: 28,
+                      ),
+                    ],
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -253,7 +332,7 @@ class _ExportScreenState extends State<ExportScreen> {
                         strokeWidth: 3,
                         valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 18),
                       Text(
                         _loadingMessage,
                         style: GoogleFonts.inter(
@@ -270,6 +349,32 @@ class _ExportScreenState extends State<ExportScreen> {
         ],
       ),
       bottomNavigationBar: const FloatingBottomBar(currentTabIndex: 2),
+    );
+  }
+
+  Widget _buildSpecColumn(IconData icon, String value, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: AppColors.primaryLight, size: 20),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            color: AppColors.textMuted,
+          ),
+        ),
+      ],
     );
   }
 }

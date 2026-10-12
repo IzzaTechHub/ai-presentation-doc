@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../models/slide_model.dart';
 import '../models/template_model.dart';
 import '../widgets/floating_bottom_bar.dart';
+import '../widgets/interactive_bounce.dart';
 import '../theme/app_theme.dart';
 import '../services/app_state.dart';
 import 'editor_screen.dart';
@@ -153,37 +155,41 @@ class _HistoryScreenState extends State<HistoryScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.history_toggle_off_rounded,
-              color: Color(0xFFCBC3D7),
-              size: 64,
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.primaryContainer,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.primaryBorder, width: 1.5),
+              ),
+              child: const Icon(
+                Icons.folder_open_rounded,
+                color: AppColors.primary,
+                size: 56,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Text(
-              "No history yet",
+              "No presentations yet",
               style: GoogleFonts.outfit(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              "Your generated presentations will automatically be saved to history.",
+              "Your generated presentations will automatically be preserved in your vault.",
               style: GoogleFonts.inter(
                 fontSize: 13,
-                color: const Color(0xFFCBC3D7).withValues(alpha: 0.7),
+                color: AppColors.textSecondary,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(180, 48),
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () {
+            InteractiveBounce(
+              scaleFactor: 0.95,
+              onTap: () {
                 Navigator.pushAndRemoveUntil(
                   context,
                   PageRouteBuilder(
@@ -194,12 +200,39 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   (route) => false,
                 );
               },
-              child: Text(
-                "Create Presentation",
-                style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+              child: Container(
+                width: 200,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryDark],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.4),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  "Create Presentation",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ],
+        ).animate().fadeIn(duration: 400.ms).scale(
+          begin: const Offset(0.95, 0.95),
+          end: const Offset(1, 1),
+          curve: Curves.easeOutBack,
         ),
       ),
     );
@@ -207,7 +240,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget _buildHistoryList() {
     return ListView.builder(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
       itemCount: AppState.history.length,
       itemBuilder: (context, index) {
         final item = AppState.history[index];
@@ -216,7 +249,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
         final slideCount = item['slideCount'] as int? ?? 0;
         final templateName = item['templateName'] as String? ?? "Default";
         
-        // Parse time dynamically using custom formatter to avoid package dependencies
         final timestampStr = item['timestamp'] as String?;
         String formattedDate = "Recently";
         if (timestampStr != null) {
@@ -230,64 +262,79 @@ class _HistoryScreenState extends State<HistoryScreen> {
           } catch (_) {}
         }
 
-        return Container(
-          margin: const EdgeInsets.only(bottom: 16.0),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: AppColors.surfaceBorder,
-              width: 1.0,
-            ),
-          ),
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            leading: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppColors.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.slideshow_rounded, color: AppColors.primary, size: 24),
-            ),
-            title: Text(
-              topic,
-              style: GoogleFonts.inter(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 4),
-                Text(
-                  "$slideCount slides  •  $templateName style",
-                  style: GoogleFonts.inter(
-                    color: const Color(0xFFCBC3D7).withValues(alpha: 0.7),
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  formattedDate,
-                  style: GoogleFonts.inter(
-                    color: const Color(0xFFCBC3D7).withValues(alpha: 0.5),
-                    fontSize: 10,
-                  ),
-                ),
-              ],
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_outline_rounded, color: Color(0xFFFFB4AB), size: 20),
-              onPressed: () => _deleteHistoryItem(id),
-            ),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 14.0),
+          child: InteractiveBounce(
+            scaleFactor: 0.98,
             onTap: () => _loadPresentation(item),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: AppColors.surfaceBorder,
+                  width: 1.0,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.slideshow_rounded, color: AppColors.primary, size: 24),
+                ),
+                title: Text(
+                  topic,
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 4),
+                    Text(
+                      "$slideCount slides  •  $templateName style",
+                      style: GoogleFonts.inter(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      formattedDate,
+                      style: GoogleFonts.inter(
+                        color: AppColors.textMuted,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 20),
+                  onPressed: () => _deleteHistoryItem(id),
+                ),
+              ),
+            ),
           ),
-        );
+        ).animate().fadeIn(
+          delay: (index * 60).ms,
+          duration: 350.ms,
+        ).slideY(begin: 0.12, end: 0, curve: Curves.easeOutCubic);
       },
     );
   }

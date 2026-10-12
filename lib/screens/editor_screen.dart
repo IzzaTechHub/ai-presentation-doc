@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/slide_model.dart';
 import '../models/template_model.dart';
 import '../services/app_state.dart';
 import '../widgets/floating_bottom_bar.dart';
+import '../widgets/interactive_bounce.dart';
 import '../theme/app_theme.dart';
 import 'export_screen.dart';
 import 'template_screen.dart';
@@ -271,68 +273,107 @@ class _EditorScreenState extends State<EditorScreen> {
         layouts.contains(currentSlide.layout) ? currentSlide.layout : layouts.first;
 
     return Container(
-      margin: const EdgeInsets.only(top: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      margin: const EdgeInsets.only(top: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF171F33).withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        color: AppColors.surfaceElevated.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.surfaceBorder, width: 1.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Tap text on the slide to edit',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              color: const Color(0xFFCBC3D7).withValues(alpha: 0.8),
-            ),
-            textAlign: TextAlign.center,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.touch_app_outlined, color: AppColors.textMuted, size: 14),
+              const SizedBox(width: 4),
+              Text(
+                'Tap any title or bullet on the canvas to edit',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    isExpanded: true,
-                    value: layoutValue,
-                    dropdownColor: const Color(0xFF171F33),
-                    style: GoogleFonts.inter(
-                      color: const Color(0xFF5DE6FF),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 11,
-                    ),
-                    items: layouts
-                        .map(
-                          (layout) => DropdownMenuItem<String>(
-                            value: layout,
-                            child: Text(
-                              layout.replaceAll('_', ' ').toUpperCase(),
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: AppColors.inputFill,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.surfaceBorder),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      value: layoutValue,
+                      dropdownColor: AppColors.surfaceElevated,
+                      style: GoogleFonts.inter(
+                        color: AppColors.primaryLight,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 11,
+                      ),
+                      items: layouts
+                          .map(
+                            (layout) => DropdownMenuItem<String>(
+                              value: layout,
+                              child: Text(
+                                layout.replaceAll('_', ' ').toUpperCase(),
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (val) {
-                      if (val != null) _changeLayout(val);
-                    },
+                          )
+                          .toList(),
+                      onChanged: (val) {
+                        if (val != null) _changeLayout(val);
+                      },
+                    ),
                   ),
                 ),
               ),
-              IconButton(
-                tooltip: 'Add bullet',
-                onPressed: _addBullet,
-                icon: const Icon(Icons.add_circle_outline, color: AppColors.primary, size: 22),
+              const SizedBox(width: 8),
+              InteractiveBounce(
+                onTap: _addBullet,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryContainer,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.primaryBorder),
+                  ),
+                  child: const Icon(Icons.add_rounded, color: AppColors.primaryLight, size: 20),
+                ),
               ),
-              IconButton(
-                tooltip: 'Remove selected bullet',
-                onPressed: _removeSelectedBullet,
-                icon: const Icon(Icons.remove_circle_outline, color: AppColors.error, size: 22),
+              const SizedBox(width: 6),
+              InteractiveBounce(
+                onTap: _removeSelectedBullet,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0x26EF4444),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: const Color(0x40EF4444)),
+                  ),
+                  child: const Icon(Icons.remove_rounded, color: AppColors.error, size: 20),
+                ),
               ),
             ],
           ),
@@ -427,13 +468,9 @@ class _EditorScreenState extends State<EditorScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(180, 48),
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                      ),
-                      onPressed: () {
+                    InteractiveBounce(
+                      scaleFactor: 0.95,
+                      onTap: () {
                         Navigator.pushAndRemoveUntil(
                           context,
                           PageRouteBuilder(
@@ -444,12 +481,35 @@ class _EditorScreenState extends State<EditorScreen> {
                           (route) => false,
                         );
                       },
-                      child: Text(
-                        "Start Generating",
-                        style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                      child: Container(
+                        width: 180,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.4),
+                              blurRadius: 14,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Start Generating",
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ],
+                ).animate().fadeIn(duration: 400.ms).scale(
+                  begin: const Offset(0.95, 0.95),
+                  end: const Offset(1, 1),
+                  curve: Curves.easeOutBack,
                 ),
               ),
             ),
@@ -493,10 +553,8 @@ class _EditorScreenState extends State<EditorScreen> {
         scrolledUnderElevation: 0,
         actions: [
           // Toolbar Actions
-          IconButton(
-            icon: const Icon(Icons.palette_outlined, color: AppColors.primaryLight),
-            tooltip: "Change Style",
-            onPressed: () {
+          InteractiveBounce(
+            onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -507,31 +565,31 @@ class _EditorScreenState extends State<EditorScreen> {
                 ),
               );
             },
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(Icons.palette_outlined, color: AppColors.primaryLight, size: 22),
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.add_circle, color: AppColors.primary),
-            tooltip: "Add Slide",
-            onPressed: _addSlide,
+          InteractiveBounce(
+            onTap: _addSlide,
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(Icons.add_circle_outline_rounded, color: AppColors.primary, size: 22),
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
-            tooltip: "Delete Slide",
-            onPressed: _deleteSlide,
+          InteractiveBounce(
+            onTap: _deleteSlide,
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 22),
+            ),
           ),
           const SizedBox(width: 4),
           // Export Button styled with border outline
           Padding(
-            padding: const EdgeInsets.only(right: 16.0, left: 8.0),
-            child: TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: const BorderSide(color: AppColors.primaryBorder),
-                ),
-              ),
-              onPressed: () {
+            padding: const EdgeInsets.only(right: 16.0, left: 6.0),
+            child: InteractiveBounce(
+              onTap: () {
                 _commitEdit(rebuild: false);
                 Navigator.push(
                   context,
@@ -543,9 +601,28 @@ class _EditorScreenState extends State<EditorScreen> {
                   ),
                 );
               },
-              child: Text(
-                "Export",
-                style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryContainer,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.primaryBorder),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.file_upload_outlined, color: AppColors.primaryLight, size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                      "Export",
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: AppColors.primaryLight,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -610,7 +687,8 @@ class _EditorScreenState extends State<EditorScreen> {
                     if (index == _slides.length) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                        child: GestureDetector(
+                        child: InteractiveBounce(
+                          scaleFactor: 0.92,
                           onTap: _addSlide,
                           child: Container(
                             height: 48,
@@ -634,7 +712,8 @@ class _EditorScreenState extends State<EditorScreen> {
                     
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                      child: GestureDetector(
+                      child: InteractiveBounce(
+                        scaleFactor: 0.94,
                         onTap: () => _selectSlide(index),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 150),
@@ -728,76 +807,93 @@ class _EditorScreenState extends State<EditorScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              AspectRatio(
-                                aspectRatio: 16 / 9,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    gradient: template.colors.backgroundStart != null &&
-                                            template.colors.backgroundEnd != null
-                                        ? LinearGradient(
-                                            colors: [
-                                              _parseHex(template.colors.backgroundStart!),
-                                              _parseHex(template.colors.backgroundEnd!),
-                                            ],
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                          )
-                                        : null,
-                                    color: template.colors.backgroundStart == null
-                                        ? _parseHex(template.colors.background)
-                                        : null,
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: Colors.white.withValues(alpha: 0.08),
-                                      width: 1.0,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.4),
-                                        blurRadius: 20,
-                                        offset: const Offset(0, 8),
-                                      ),
-                                    ],
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 260),
+                                transitionBuilder: (child, animation) => FadeTransition(
+                                  opacity: animation,
+                                  child: SlideTransition(
+                                    position: Tween<Offset>(
+                                      begin: const Offset(0.03, 0),
+                                      end: Offset.zero,
+                                    ).animate(CurvedAnimation(
+                                      parent: animation,
+                                      curve: Curves.easeOutCubic,
+                                    )),
+                                    child: child,
                                   ),
-                                  child: Stack(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: _buildSlideContent(
-                                          currentSlide,
-                                          template,
-                                          editable: true,
-                                        ),
+                                ),
+                                child: AspectRatio(
+                                  key: ValueKey<int>(_selectedSlideIndex),
+                                  aspectRatio: 16 / 9,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: template.colors.backgroundStart != null &&
+                                              template.colors.backgroundEnd != null
+                                          ? LinearGradient(
+                                              colors: [
+                                                _parseHex(template.colors.backgroundStart!),
+                                                _parseHex(template.colors.backgroundEnd!),
+                                              ],
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            )
+                                          : null,
+                                      color: template.colors.backgroundStart == null
+                                          ? _parseHex(template.colors.background)
+                                          : null,
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: Colors.white.withValues(alpha: 0.08),
+                                        width: 1.0,
                                       ),
-                                      Positioned(
-                                        top: 12,
-                                        right: 12,
-                                        child: IgnorePointer(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.black.withValues(alpha: 0.4),
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(
-                                                color: Colors.white.withValues(alpha: 0.12),
-                                                width: 1,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.4),
+                                          blurRadius: 20,
+                                          offset: const Offset(0, 8),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: _buildSlideContent(
+                                            currentSlide,
+                                            template,
+                                            editable: true,
+                                          ),
+                                        ),
+                                        Positioned(
+                                          top: 12,
+                                          right: 12,
+                                          child: IgnorePointer(
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 10,
+                                                vertical: 4,
                                               ),
-                                            ),
-                                            child: Text(
-                                              "AI Enhanced",
-                                              style: GoogleFonts.inter(
-                                                color: const Color(0xFFCBC3D7),
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w600,
+                                              decoration: BoxDecoration(
+                                                color: Colors.black.withValues(alpha: 0.4),
+                                                borderRadius: BorderRadius.circular(12),
+                                                border: Border.all(
+                                                  color: Colors.white.withValues(alpha: 0.12),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Text(
+                                                "AI Enhanced",
+                                                style: GoogleFonts.inter(
+                                                  color: const Color(0xFFCBC3D7),
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
