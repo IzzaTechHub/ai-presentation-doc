@@ -102,37 +102,6 @@ class _ExportScreenState extends State<ExportScreen> {
       ),
       body: Stack(
         children: [
-          // Background ambient leaks in soft brand orange
-          Positioned(
-            top: -150,
-            left: -100,
-            width: 400,
-            height: 400,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer.withValues(alpha: 0.8), Colors.transparent],
-                  radius: 0.5,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -150,
-            right: -100,
-            width: 350,
-            height: 350,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer.withValues(alpha: 0.5), Colors.transparent],
-                  radius: 0.5,
-                ),
-              ),
-            ),
-          ),
           // Main Body Export controls
           SafeArea(
             child: Padding(

@@ -199,45 +199,8 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 6),
         ],
       ),
-      body: Stack(
-        children: [
-          // Background ambient leaks in brand orange with subtle pulsing animation
-          Positioned(
-            top: -150,
-            left: -100,
-            width: 450,
-            height: 450,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer.withValues(alpha: 0.8), Colors.transparent],
-                  radius: 0.5,
-                ),
-              ),
-            ),
-          ).animate(onPlay: (controller) => controller.repeat(reverse: true))
-           .scaleXY(begin: 1.0, end: 1.08, duration: 4000.ms, curve: Curves.easeInOut),
-          Positioned(
-            bottom: -150,
-            right: -100,
-            width: 400,
-            height: 400,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer.withValues(alpha: 0.5), Colors.transparent],
-                  radius: 0.5,
-                ),
-              ),
-            ),
-          ).animate(onPlay: (controller) => controller.repeat(reverse: true))
-           .scaleXY(begin: 1.08, end: 1.0, duration: 4500.ms, curve: Curves.easeInOut),
-
-          // Scrollable main content
-          SafeArea(
-            child: SingleChildScrollView(
+      body: SafeArea(
+        child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
               child: Form(
                 key: _formKey,
@@ -694,8 +657,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-        ],
-      ),
       bottomNavigationBar: const FloatingBottomBar(currentTabIndex: 1),
     );
   }

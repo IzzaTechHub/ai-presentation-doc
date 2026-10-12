@@ -77,3 +77,11 @@ boxShadow: [
    - History item tiles rendered in white with slate borders and orange metadata chips.
 6. **Settings Screen:**
    - App Brand Showcase Card featuring the brand logo with white card elevation, deep slate title, and orange version pill.
+
+---
+
+## 5. Pure Background Clarity (Elimination of Ambient Leaks)
+- **Problem:** Ambient background radial gradients that transitioned to `Colors.transparent` (`#00000000`) caused dark gray/black sRGB interpolation artifacts (dirty shadow smudges in top-right, top-left, and bottom-right corners) on the light canvas.
+- **Resolution:** All legacy `RadialGradient` ambient orbs have been completely removed across all screens (`SettingsScreen`, `HomeScreen`, `HistoryScreen`, `TemplateScreen`, `ExportScreen`, `EditorScreen`).
+- **Result:** Screens now present a 100% clean, pristine, and uniform Editorial White background (`#F8F9FA`) with pure `#FFFFFF` elevated cards and crisp vector typography.
+

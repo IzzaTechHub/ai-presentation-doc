@@ -131,42 +131,8 @@ class _TemplateScreenState extends State<TemplateScreen> {
           ),
         ),
       ),
-      body: Stack(
+      body: Column(
         children: [
-          // Background ambient leaks in soft brand orange
-          Positioned(
-            top: -150,
-            left: -100,
-            width: 450,
-            height: 450,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer.withValues(alpha: 0.8), Colors.transparent],
-                  radius: 0.5,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -150,
-            right: -100,
-            width: 400,
-            height: 400,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer.withValues(alpha: 0.5), Colors.transparent],
-                  radius: 0.5,
-                ),
-              ),
-            ),
-          ),
-          // Main layout content
-          Column(
-            children: [
               // Header descriptive prompt
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
@@ -298,8 +264,6 @@ class _TemplateScreenState extends State<TemplateScreen> {
               ),
             ],
           ),
-        ],
-      ),
       bottomNavigationBar: const FloatingBottomBar(currentTabIndex: 1),
     );
   }

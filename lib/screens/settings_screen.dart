@@ -31,42 +31,8 @@ class SettingsScreen extends StatelessWidget {
           bottom: BorderSide(color: AppColors.surfaceBorder, width: 1.0),
         ),
       ),
-      body: Stack(
-        children: [
-          // Background ambient leaks in soft brand orange
-          Positioned(
-            top: -150,
-            left: -100,
-            width: 400,
-            height: 400,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer.withValues(alpha: 0.8), Colors.transparent],
-                  radius: 0.5,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -150,
-            right: -100,
-            width: 350,
-            height: 350,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer.withValues(alpha: 0.6), Colors.transparent],
-                  radius: 0.5,
-                ),
-              ),
-            ),
-          ),
-          // Scrollable Settings options
-          SafeArea(
-            child: ListView(
+      body: SafeArea(
+        child: ListView(
               padding: const EdgeInsets.all(24.0),
               children: [
                 // App Brand Showcase Card featuring the new logo
@@ -229,8 +195,6 @@ class SettingsScreen extends StatelessWidget {
               ],
             ),
           ),
-        ],
-      ),
       bottomNavigationBar: const FloatingBottomBar(currentTabIndex: 3),
     );
   }

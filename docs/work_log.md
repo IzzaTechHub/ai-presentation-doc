@@ -243,8 +243,26 @@
    - Added 4 dedicated cybersecurity unit test scenarios in [test/error_handler_test.dart](file:///e:/Abdulrahman/imagineX/test/error_handler_test.dart) (14/14 tests passing).
    - `flutter analyze` verified: **0 errors, 0 warnings**.
 
+---
 
+## Elimination of Muddy Ambient Shadows & Background Purification
 
+- **Date:** 2026-10-12
+- **Objective:** Eliminate dirty dark gray / black shadow smudges visible in the top-left, top-right, and bottom-right corners behind light theme screens.
 
+### Root Cause Analysis
+- Screens contained legacy ambient background `Positioned` containers with `RadialGradient` transitioning from `AppColors.primaryContainer` to `Colors.transparent`.
+- In Flutter's rendering pipeline, `Colors.transparent` defaults to `0x00000000` (transparent black). During sRGB interpolation on a light/white background, the color gradient passes through murky dark gray/black shades at its edges, causing visible dark smudge artifacts in corner backgrounds.
 
-
+### Completed Tasks
+1. **Screen-by-Screen Background Cleanup:**
+   - [lib/screens/settings_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/settings_screen.dart): Removed ambient radial gradient `Positioned` containers; simplified body to pure `SafeArea` + `ListView`.
+   - [lib/screens/home_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/home_screen.dart): Removed ambient radial gradient containers with looping animations; simplified body to direct `SafeArea` + `SingleChildScrollView`.
+   - [lib/screens/history_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/history_screen.dart): Removed screen-level ambient leaks and miniature thumbnail radial glow.
+   - [lib/screens/template_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/template_screen.dart): Removed ambient leaks; simplified body to direct `Column`.
+   - [lib/screens/export_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/export_screen.dart): Removed ambient gradient leaks behind export action cards.
+   - [lib/screens/editor_screen.dart](file:///e:/Abdulrahman/imagineX/lib/screens/editor_screen.dart): Removed ambient leaks from both empty state and main workspace stage; cleaned thumbnail rail background color.
+2. **Quality Assurance & Verification:**
+   - `flutter analyze` executed: **0 errors, 0 warnings**.
+   - `flutter test` executed: **All 14 tests passing**.
+   - Documentation updated in [docs/ui/light_theme_design.md](file:///e:/Abdulrahman/imagineX/docs/ui/light_theme_design.md).

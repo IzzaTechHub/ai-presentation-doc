@@ -412,39 +412,7 @@ class _EditorScreenState extends State<EditorScreen> {
             ),
           ),
         ),
-        body: Stack(
-          children: [
-            Positioned(
-              top: -150,
-              left: -100,
-              width: 450,
-              height: 450,
-              child: Container(
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [AppColors.primaryContainer, Colors.transparent],
-                    radius: 0.5,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: -150,
-              right: -100,
-              width: 400,
-              height: 400,
-              child: Container(
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [Color(0x1FFF5722), Colors.transparent],
-                    radius: 0.5,
-                  ),
-                ),
-              ),
-            ),
-            Center(
+        body: Center(
               child: Padding(
                 padding: const EdgeInsets.all(32.0),
                 child: Column(
@@ -519,8 +487,6 @@ class _EditorScreenState extends State<EditorScreen> {
                 ),
               ),
             ),
-          ],
-        ),
         bottomNavigationBar: const FloatingBottomBar(currentTabIndex: 2),
       );
     }
@@ -640,51 +606,17 @@ class _EditorScreenState extends State<EditorScreen> {
           ),
         ),
       ),
-      body: Stack(
+      body: Row(
         children: [
-          // Background ambient leaks in orange
-          Positioned(
-            top: -150,
-            left: -100,
-            width: 400,
-            height: 400,
-            child: Container(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer, Colors.transparent],
-                  radius: 0.5,
-                ),
+          // LEFT PANEL: Slide Thumbnails Rail (Secondary Rail)
+          Container(
+            width: 96,
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              border: Border(
+                right: BorderSide(color: AppColors.surfaceBorder, width: 1),
               ),
             ),
-          ),
-          Positioned(
-            bottom: -150,
-            right: -100,
-            width: 350,
-            height: 350,
-            child: Container(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [Color(0x1FFF5722), Colors.transparent],
-                  radius: 0.5,
-                ),
-              ),
-            ),
-          ),
-          // Workspace row: side rail + stage canvas
-          Row(
-            children: [
-              // LEFT PANEL: Slide Thumbnails Rail (Secondary Rail)
-              Container(
-                width: 96,
-                decoration: BoxDecoration(
-                  color: AppColors.surface.withValues(alpha: 0.65),
-                  border: const Border(
-                    right: BorderSide(color: AppColors.surfaceBorder, width: 1),
-                  ),
-                ),
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   itemCount: _slides.length + 1, // list + add ghost button
@@ -914,8 +846,6 @@ class _EditorScreenState extends State<EditorScreen> {
               ),
             ],
           ),
-        ],
-      ),
       bottomNavigationBar: const FloatingBottomBar(currentTabIndex: 2),
     );
   }
