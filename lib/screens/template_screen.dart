@@ -5,6 +5,7 @@ import '../models/template_model.dart';
 import '../services/api_service.dart';
 import '../services/app_state.dart';
 import '../widgets/floating_bottom_bar.dart';
+import '../theme/app_theme.dart';
 import 'editor_screen.dart';
 
 class TemplateScreen extends StatefulWidget {
@@ -49,7 +50,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: const Color(0xFF171F33),
+          backgroundColor: AppColors.surfaceElevated,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 24.0),
@@ -58,7 +59,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
               children: [
                 const CircularProgressIndicator(
                   strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B5CF6)),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
                 const SizedBox(height: 24),
                 Text(
@@ -143,7 +144,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   "OK",
-                  style: GoogleFonts.inter(color: const Color(0xFF8B5CF6), fontWeight: FontWeight.bold),
+                  style: GoogleFonts.inter(color: AppColors.primary, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -161,24 +162,24 @@ class _TemplateScreenState extends State<TemplateScreen> {
           "Choose Template",
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.w700,
-            color: const Color(0xFF8B5CF6),
+            color: AppColors.primary,
             fontSize: 22,
             letterSpacing: -0.5,
           ),
         ),
-        backgroundColor: const Color(0xFF0B1326).withValues(alpha: 0.8),
+        backgroundColor: AppColors.background.withValues(alpha: 0.8),
         elevation: 0,
         scrolledUnderElevation: 0,
         shape: const Border(
           bottom: BorderSide(
-            color: Color(0x1AFFFFFF),
+            color: AppColors.surfaceBorder,
             width: 1.0,
           ),
         ),
       ),
       body: Stack(
         children: [
-          // Background ambient leaks (Radial glow circles)
+          // Background ambient leaks in brand orange
           Positioned(
             top: -150,
             left: -100,
@@ -188,7 +189,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x268B5CF6), Colors.transparent],
+                  colors: [AppColors.primaryContainer, Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -203,7 +204,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x1F8B5CF6), Colors.transparent],
+                  colors: [Color(0x1FFF5722), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -301,7 +302,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
                       height: 52,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF8B5CF6), Color(0xFF6D3BD7)],
+                          colors: [AppColors.primary, AppColors.primaryDark],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -309,7 +310,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
                         boxShadow: _selectedTemplate != null
                             ? [
                                 BoxShadow(
-                                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
+                                  color: AppColors.primary.withValues(alpha: 0.35),
                                   blurRadius: 16,
                                   offset: const Offset(0, 4),
                                 )
@@ -402,7 +403,8 @@ class _TemplateScreenState extends State<TemplateScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(120, 44),
-                backgroundColor: const Color(0xFF8B5CF6),
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
               ),
               onPressed: () {
                 setState(() {
@@ -631,16 +633,16 @@ class TemplateListItem extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.only(bottom: 20),
         decoration: BoxDecoration(
-          color: const Color(0xFF171F33),
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? const Color(0xFF8B5CF6) : Colors.white.withValues(alpha: 0.08),
+            color: isSelected ? AppColors.primary : AppColors.surfaceBorder,
             width: isSelected ? 2.5 : 1.5,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.25),
+                    color: AppColors.primary.withValues(alpha: 0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
                   )
@@ -672,7 +674,7 @@ class TemplateListItem extends StatelessWidget {
                         Text(
                           styleSubtitle,
                           style: GoogleFonts.inter(
-                            color: const Color(0xFFCBC3D7).withValues(alpha: 0.7),
+                            color: AppColors.textSecondary,
                             fontSize: 11,
                           ),
                         ),
@@ -686,10 +688,10 @@ class TemplateListItem extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: isSelected ? const Color(0xFF8B5CF6) : Colors.white24,
+                        color: isSelected ? AppColors.primary : Colors.white24,
                         width: 2,
                       ),
-                      color: isSelected ? const Color(0xFF8B5CF6) : Colors.transparent,
+                      color: isSelected ? AppColors.primary : Colors.transparent,
                     ),
                     child: isSelected
                         ? const Icon(

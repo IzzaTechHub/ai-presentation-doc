@@ -4,6 +4,7 @@ import '../models/slide_model.dart';
 import '../services/api_service.dart';
 import '../services/file_service.dart';
 import '../widgets/floating_bottom_bar.dart';
+import '../theme/app_theme.dart';
 
 class ExportScreen extends StatefulWidget {
   final List<SlideModel> slides;
@@ -86,54 +87,27 @@ class _ExportScreenState extends State<ExportScreen> {
     }
   }
 
-  void _downloadPDF() {
-    // Show premium descriptive dialog explaining PDF offline compilation options
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.picture_as_pdf_outlined, color: Color(0xFF5C6BC0)),
-            SizedBox(width: 10),
-            Text("PDF Export"),
-          ],
-        ),
-        content: const Text(
-          "PDF conversion requires LibreOffice server-side compilation which is currently in setup for the production Render cluster. \n\nPlease use the 'Download PPTX' option to export your editable slides directly.",
-          style: TextStyle(height: 1.4),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "Export Deck",
-          style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: Colors.white),
+          style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: AppColors.primary),
         ),
-        backgroundColor: const Color(0xFF0B1326).withValues(alpha: 0.8),
+        backgroundColor: AppColors.background.withValues(alpha: 0.8),
         elevation: 0,
         scrolledUnderElevation: 0,
         shape: const Border(
           bottom: BorderSide(
-            color: Color(0x1AFFFFFF),
+            color: AppColors.surfaceBorder,
             width: 1.0,
           ),
         ),
       ),
       body: Stack(
         children: [
-          // Background ambient leaks
+          // Background ambient leaks in orange
           Positioned(
             top: -150,
             left: -100,
@@ -143,7 +117,7 @@ class _ExportScreenState extends State<ExportScreen> {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x268B5CF6), Colors.transparent],
+                  colors: [AppColors.primaryContainer, Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -158,7 +132,7 @@ class _ExportScreenState extends State<ExportScreen> {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x1F8B5CF6), Colors.transparent],
+                  colors: [Color(0x1FFF5722), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -174,7 +148,7 @@ class _ExportScreenState extends State<ExportScreen> {
                 // Header success card icon
                 const Icon(
                   Icons.task_alt_rounded,
-                  color: Color(0xFF43A047),
+                  color: AppColors.success,
                   size: 64,
                 ),
                 const SizedBox(height: 16),
@@ -193,7 +167,7 @@ class _ExportScreenState extends State<ExportScreen> {
                   "Your presentation deck has been successfully formatted. Choose your preferred export file type below.",
                   style: GoogleFonts.inter(
                     fontSize: 14,
-                    color: const Color(0xFFCBC3D7),
+                    color: AppColors.textSecondary,
                     height: 1.4,
                   ),
                   textAlign: TextAlign.center,
@@ -203,12 +177,19 @@ class _ExportScreenState extends State<ExportScreen> {
                 // Button 1: Download PPTX
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFF171F33).withValues(alpha: 0.8),
+                    color: AppColors.surface,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.08),
+                      color: AppColors.surfaceBorder,
                       width: 1.0,
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: InkWell(
                     onTap: _isLoading ? null : _downloadPPTX,
@@ -217,7 +198,7 @@ class _ExportScreenState extends State<ExportScreen> {
                       padding: const EdgeInsets.all(20.0),
                       child: Row(
                         children: [
-                          const Icon(Icons.slideshow_rounded, color: Color(0xFF8B5CF6), size: 36),
+                          const Icon(Icons.slideshow_rounded, color: AppColors.primary, size: 36),
                           const SizedBox(width: 16),
                           Expanded(
                             child: Column(
@@ -236,68 +217,18 @@ class _ExportScreenState extends State<ExportScreen> {
                                   "Save editable PowerPoint presentation",
                                   style: GoogleFonts.inter(
                                     fontSize: 12,
-                                    color: const Color(0xFFCBC3D7).withValues(alpha: 0.7),
+                                    color: AppColors.textSecondary,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const Icon(Icons.download_rounded, color: Color(0xFFCBC3D7)),
+                          const Icon(Icons.download_rounded, color: AppColors.primary),
                         ],
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-
-                // Button 2: Download PDF
-                // Container(
-                //   decoration: BoxDecoration(
-                //     color: const Color(0xFF171F33).withValues(alpha: 0.8),
-                //     borderRadius: BorderRadius.circular(16),
-                //     border: Border.all(
-                //       color: Colors.white.withValues(alpha: 0.08),
-                //       width: 1.0,
-                //     ),
-                //   ),
-                //   child: InkWell(
-                //     onTap: _isLoading ? null : _downloadPDF,
-                //     borderRadius: BorderRadius.circular(16),
-                //     child: Padding(
-                //       padding: const EdgeInsets.all(20.0),
-                //       child: Row(
-                //         children: [
-                //           const Icon(Icons.picture_as_pdf_rounded, color: Color(0xFF5DE6FF), size: 36),
-                //           const SizedBox(width: 16),
-                //           Expanded(
-                //             child: Column(
-                //               crossAxisAlignment: CrossAxisAlignment.start,
-                //               children: [
-                //                 Text(
-                //                   "Download PDF",
-                //                   style: GoogleFonts.inter(
-                //                     fontSize: 16,
-                //                     fontWeight: FontWeight.bold,
-                //                     color: Colors.white,
-                //                   ),
-                //                 ),
-                //                 const SizedBox(height: 4),
-                //                 Text(
-                //                   "Save read-only PDF file structure",
-                //                   style: GoogleFonts.inter(
-                //                     fontSize: 12,
-                //                     color: const Color(0xFFCBC3D7).withValues(alpha: 0.7),
-                //                   ),
-                //                 ),
-                //               ],
-                //             ),
-                //           ),
-                //           const Icon(Icons.download_rounded, color: Color(0xFFCBC3D7)),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -305,13 +236,13 @@ class _ExportScreenState extends State<ExportScreen> {
           // Loading Dialog Overlay
           if (_isLoading)
             Container(
-              color: const Color(0xFF000000).withValues(alpha: 0.6),
+              color: Colors.black.withValues(alpha: 0.6),
               alignment: Alignment.center,
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF171F33),
+                  color: AppColors.surfaceElevated,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.08), width: 1.0),
+                  border: Border.all(color: AppColors.surfaceBorder, width: 1.0),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 36),
@@ -320,7 +251,7 @@ class _ExportScreenState extends State<ExportScreen> {
                     children: [
                       const CircularProgressIndicator(
                         strokeWidth: 3,
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B5CF6)),
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                       ),
                       const SizedBox(height: 16),
                       Text(

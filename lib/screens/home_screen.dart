@@ -5,6 +5,7 @@ import 'template_screen.dart';
 import '../widgets/floating_bottom_bar.dart';
 import '../services/app_state.dart';
 import '../services/api_service.dart';
+import '../theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -130,22 +131,37 @@ class _HomeScreenState extends State<HomeScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "SlideAI",
-          style: GoogleFonts.outfit(
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFF8B5CF6),
-            fontSize: 22,
-            letterSpacing: -0.5,
-          ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                'assets/icon/app_logo.png',
+                width: 32,
+                height: 32,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              "SlideAI",
+              style: GoogleFonts.outfit(
+                fontWeight: FontWeight.w700,
+                color: AppColors.primary,
+                fontSize: 22,
+                letterSpacing: -0.5,
+              ),
+            ),
+          ],
         ),
         centerTitle: false,
-        backgroundColor: const Color(0xFF0B1326).withValues(alpha: 0.8),
+        backgroundColor: AppColors.background.withValues(alpha: 0.8),
         elevation: 0,
         scrolledUnderElevation: 0,
         shape: const Border(
           bottom: BorderSide(
-            color: Color(0x1AFFFFFF),
+            color: AppColors.surfaceBorder,
             width: 1.0,
           ),
         ),
@@ -159,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text(
               "Export",
               style: GoogleFonts.inter(
-                color: const Color(0xFF8B5CF6),
+                color: AppColors.primary,
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),
@@ -170,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Stack(
         children: [
-          // Background ambient leaks (Radial glow circles)
+          // Background ambient leaks (Radial glow circles in orange)
           Positioned(
             top: -150,
             left: -100,
@@ -180,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x268B5CF6), Colors.transparent],
+                  colors: [AppColors.primaryContainer, Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -195,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x1F8B5CF6), Colors.transparent],
+                  colors: [Color(0x1FFF5722), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -240,10 +256,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(24.0),
                           decoration: BoxDecoration(
-                            color: const Color(0x1F1E293B), // rgba(30, 41, 59, 0.12)
+                            color: AppColors.surface.withValues(alpha: 0.65),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.08),
+                              color: AppColors.surfaceBorder,
                               width: 1.0,
                             ),
                           ),
@@ -256,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: GoogleFonts.inter(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFFD0BCFF),
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 12),
@@ -275,14 +291,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                 decoration: InputDecoration(
                                   hintText: "e.g. Enter a topic, or type a custom prompt and click 'Perfect Prompt' below...",
                                   alignLabelWithHint: true,
-                                  fillColor: const Color(0x0DFFFFFF),
+                                  fillColor: AppColors.inputFill,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+                                    borderSide: const BorderSide(color: AppColors.surfaceBorder),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+                                    borderSide: const BorderSide(color: AppColors.surfaceBorder),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                                   ),
                                 ),
                                 style: GoogleFonts.inter(
@@ -302,13 +322,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                                       decoration: BoxDecoration(
                                         color: _isPerfecting
-                                            ? const Color(0x0DFFFFFF)
-                                            : const Color(0x1F8B5CF6), // Soft translucent purple bg
+                                            ? AppColors.inputFill
+                                            : AppColors.primaryContainer,
                                         borderRadius: BorderRadius.circular(20),
                                         border: Border.all(
                                           color: _isPerfecting
                                               ? Colors.white10
-                                              : const Color(0x338B5CF6),
+                                              : AppColors.primaryBorder,
                                           width: 1.0,
                                         ),
                                       ),
@@ -321,7 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               height: 14,
                                               child: CircularProgressIndicator(
                                                 strokeWidth: 2,
-                                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF5DE6FF)),
+                                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                                               ),
                                             ),
                                             const SizedBox(width: 8),
@@ -329,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Text(
                                             _isPerfecting ? "Perfecting..." : "Perfect Prompt",
                                             style: GoogleFonts.inter(
-                                              color: const Color(0xFF5DE6FF),
+                                              color: AppColors.primaryLight,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
                                             ),
@@ -417,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: GoogleFonts.inter(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: const Color(0xFFD0BCFF),
+                                      color: AppColors.textSecondary,
                                     ),
                                   ),
                                   Text(
@@ -436,10 +456,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               SliderTheme(
                                 data: SliderTheme.of(context).copyWith(
                                   trackHeight: 6,
-                                  activeTrackColor: const Color(0xFF8B5CF6),
+                                  activeTrackColor: AppColors.primary,
                                   inactiveTrackColor: Colors.white.withValues(alpha: 0.1),
-                                  thumbColor: const Color(0xFF8B5CF6),
-                                  overlayColor: const Color(0x228B5CF6),
+                                  thumbColor: AppColors.primary,
+                                  overlayColor: AppColors.primaryContainer,
                                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10.0),
                                   overlayShape: const RoundSliderOverlayShape(overlayRadius: 20.0),
                                 ),
@@ -464,11 +484,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     Text(
                                       "Brief (4)",
-                                      style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFFCBC3D7)),
+                                      style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted),
                                     ),
                                     Text(
                                       "Comprehensive (20)",
-                                      style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFFCBC3D7)),
+                                      style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted),
                                     ),
                                   ],
                                 ),
@@ -483,14 +503,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   height: 52,
                                   decoration: BoxDecoration(
                                     gradient: const LinearGradient(
-                                      colors: [Color(0xFF8B5CF6), Color(0xFF6D3BD7)],
+                                      colors: [AppColors.primary, AppColors.primaryDark],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                     ),
                                     borderRadius: BorderRadius.circular(12),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
+                                        color: AppColors.primary.withValues(alpha: 0.35),
                                         blurRadius: 16,
                                         offset: const Offset(0, 4),
                                       )

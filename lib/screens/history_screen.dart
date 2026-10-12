@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/slide_model.dart';
 import '../models/template_model.dart';
 import '../widgets/floating_bottom_bar.dart';
+import '../theme/app_theme.dart';
 import '../services/app_state.dart';
 import 'editor_screen.dart';
 import 'home_screen.dart';
@@ -83,24 +84,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
           "Presentation History",
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.w700,
-            color: const Color(0xFF8B5CF6),
+            color: AppColors.primary,
             fontSize: 22,
             letterSpacing: -0.5,
           ),
         ),
-        backgroundColor: const Color(0xFF0B1326).withValues(alpha: 0.8),
+        backgroundColor: AppColors.background.withValues(alpha: 0.8),
         elevation: 0,
         scrolledUnderElevation: 0,
         shape: const Border(
           bottom: BorderSide(
-            color: Color(0x1AFFFFFF),
+            color: AppColors.surfaceBorder,
             width: 1.0,
           ),
         ),
       ),
       body: Stack(
         children: [
-          // Background ambient leaks
+          // Background ambient leaks in brand orange
           Positioned(
             top: -150,
             left: -100,
@@ -110,7 +111,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x268B5CF6), Colors.transparent],
+                  colors: [AppColors.primaryContainer, Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -125,7 +126,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x1F8B5CF6), Colors.transparent],
+                  colors: [Color(0x1FFF5722), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -134,7 +135,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           // Main Body
           SafeArea(
             child: _loading
-                ? const Center(child: CircularProgressIndicator(color: Color(0xFF8B5CF6)))
+                ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
                 : AppState.history.isEmpty
                     ? _buildEmptyState()
                     : _buildHistoryList(),
@@ -179,7 +180,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(180, 48),
-                backgroundColor: const Color(0xFF8B5CF6),
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
               ),
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
@@ -231,10 +233,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
         return Container(
           margin: const EdgeInsets.only(bottom: 16.0),
           decoration: BoxDecoration(
-            color: const Color(0xFF171F33).withValues(alpha: 0.8),
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.08),
+              color: AppColors.surfaceBorder,
               width: 1.0,
             ),
           ),
@@ -243,10 +245,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
             leading: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0x1F8B5CF6),
+                color: AppColors.primaryContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.slideshow_rounded, color: Color(0xFF8B5CF6), size: 24),
+              child: const Icon(Icons.slideshow_rounded, color: AppColors.primary, size: 24),
             ),
             title: Text(
               topic,

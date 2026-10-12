@@ -5,6 +5,8 @@ import '../screens/history_screen.dart';
 import '../screens/settings_screen.dart';
 import '../services/app_state.dart';
 
+import '../theme/app_theme.dart';
+
 class FloatingBottomBar extends StatelessWidget {
   final int currentTabIndex;
 
@@ -56,12 +58,13 @@ class FloatingBottomBar extends StatelessWidget {
         child: Container(
           height: 60,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surfaceElevated,
             borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: AppColors.surfaceBorder, width: 1.0),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.12),
-                blurRadius: 16,
+                color: Colors.black.withValues(alpha: 0.35),
+                blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
             ],
@@ -90,12 +93,21 @@ class FloatingBottomBar extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF8B5CF6) : Colors.transparent,
+          color: isSelected ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.35),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+              : null,
         ),
         child: Icon(
           icon,
-          color: isSelected ? Colors.white : const Color(0xFF9E9E9E),
+          color: isSelected ? Colors.white : AppColors.textMuted,
           size: 24,
         ),
       ),

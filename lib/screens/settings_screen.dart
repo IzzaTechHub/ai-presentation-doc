@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import '../widgets/floating_bottom_bar.dart';
-import 'privacy_policy_screen.dart';
+import '../theme/app_theme.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -16,21 +16,21 @@ class SettingsScreen extends StatelessWidget {
           "Settings",
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.w700,
-            color: const Color(0xFF8B5CF6),
+            color: AppColors.primary,
             fontSize: 22,
             letterSpacing: -0.5,
           ),
         ),
-        backgroundColor: const Color(0xFF0B1326).withValues(alpha: 0.8),
+        backgroundColor: AppColors.background.withValues(alpha: 0.8),
         elevation: 0,
         scrolledUnderElevation: 0,
         shape: const Border(
-          bottom: BorderSide(color: Color(0x1AFFFFFF), width: 1.0),
+          bottom: BorderSide(color: AppColors.surfaceBorder, width: 1.0),
         ),
       ),
       body: Stack(
         children: [
-          // Background ambient leaks
+          // Background ambient leaks in brand orange
           Positioned(
             top: -150,
             left: -100,
@@ -40,7 +40,7 @@ class SettingsScreen extends StatelessWidget {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x268B5CF6), Colors.transparent],
+                  colors: [AppColors.primaryContainer, Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -55,7 +55,7 @@ class SettingsScreen extends StatelessWidget {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x1F8B5CF6), Colors.transparent],
+                  colors: [Color(0x1FFF5722), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -66,6 +66,82 @@ class SettingsScreen extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(24.0),
               children: [
+                // App Brand Showcase Card featuring the new logo
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AppColors.surfaceBorder,
+                      width: 1.0,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.25),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.asset(
+                          'assets/icon/app_logo.png',
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "AI Visualizer",
+                              style: GoogleFonts.outfit(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "Smart Presentation & Document Suite",
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryContainer,
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: AppColors.primaryBorder),
+                              ),
+                              child: Text(
+                                "v1.0.5",
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.primaryLight,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
                 Text(
                   "App Information",
                   style: GoogleFonts.outfit(
@@ -83,21 +159,7 @@ class SettingsScreen extends StatelessWidget {
                         title: "App Version",
                         subtitle: "1.0.5",
                       ),
-                      const Divider(color: Color(0x1AFFFFFF), height: 1),
-                      // _buildSettingItem(
-                      //   icon: Icons.shield_outlined,
-                      //   title: "Privacy Policy & Licenses",
-                      //   subtitle: "View our privacy policy",
-                      //   onTap: () {
-                      //     Navigator.push(
-                      //       context,
-                      //       MaterialPageRoute(
-                      //         builder: (context) => const PrivacyPolicyScreen(),
-                      //       ),
-                      //     );
-                      //   },
-                      // ),
-                      const Divider(color: Color(0x1AFFFFFF), height: 1),
+                      const Divider(color: AppColors.surfaceBorder, height: 1),
                       _buildSettingItem(
                         icon: Icons.share_outlined,
                         title: "Share App",
@@ -111,7 +173,7 @@ class SettingsScreen extends StatelessWidget {
                           );
                         },
                       ),
-                      const Divider(color: Color(0x1AFFFFFF), height: 1),
+                      const Divider(color: AppColors.surfaceBorder, height: 1),
                       _buildSettingItem(
                         icon: Icons.star_rate_outlined,
                         title: "Rate Us",
@@ -143,10 +205,10 @@ class SettingsScreen extends StatelessWidget {
   Widget _buildSettingsCard({required Widget child}) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF171F33).withValues(alpha: 0.8),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: AppColors.surfaceBorder,
           width: 1.0,
         ),
       ),
@@ -162,7 +224,7 @@ class SettingsScreen extends StatelessWidget {
     VoidCallback? onTap,
   }) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF8B5CF6)),
+      leading: Icon(icon, color: AppColors.primary),
       title: Text(
         title,
         style: GoogleFonts.inter(
@@ -174,7 +236,7 @@ class SettingsScreen extends StatelessWidget {
       subtitle: Text(
         subtitle,
         style: GoogleFonts.inter(
-          color: const Color(0xFFCBC3D7).withValues(alpha: 0.7),
+          color: AppColors.textSecondary,
           fontSize: 12,
         ),
       ),
@@ -183,7 +245,7 @@ class SettingsScreen extends StatelessWidget {
           (onTap != null
               ? const Icon(
                   Icons.chevron_right_rounded,
-                  color: Color(0xFF8B5CF6),
+                  color: AppColors.primary,
                 )
               : null),
       onTap: onTap,
