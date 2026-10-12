@@ -103,17 +103,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ),
       body: Stack(
         children: [
-          // Background ambient leaks in brand orange
+          // Background ambient leaks in soft brand orange
           Positioned(
             top: -150,
             left: -100,
             width: 400,
             height: 400,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer, Colors.transparent],
+                  colors: [AppColors.primaryContainer.withValues(alpha: 0.8), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -125,10 +125,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
             width: 350,
             height: 350,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x1FFF5722), Colors.transparent],
+                  colors: [AppColors.primaryContainer.withValues(alpha: 0.5), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -174,7 +174,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               style: GoogleFonts.outfit(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -277,7 +277,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -296,7 +296,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 title: Text(
                   topic,
                   style: GoogleFonts.inter(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),

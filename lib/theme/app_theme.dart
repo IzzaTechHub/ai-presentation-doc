@@ -5,21 +5,21 @@ import 'package:google_fonts/google_fonts.dart';
 /// Centralized application color palette and theme definition
 /// Derived from the brand orange logo with true deep neutrals (no generic dark-blue).
 class AppColors {
-  // Brand Orange Accent Palette
+  // Brand Orange Accent Palette (Derived directly from app logo)
   static const Color primary = Color(0xFFFF5722); // Deep Brand Orange
   static const Color primaryLight = Color(0xFFFF7A47); // Lighter Warm Orange
   static const Color primaryDark = Color(0xFFE64A19); // Rich Dark Orange
-  static const Color primaryContainer = Color(0x26FF5722); // 15% Translucent Tint
-  static const Color primaryBorder = Color(0x40FF5722); // 25% Translucent Border
+  static const Color primaryContainer = Color(0xFFFFF0EB); // Warm Soft Peach Tint (5% Orange)
+  static const Color primaryBorder = Color(0xFFFFCCBC); // Soft Peach-Orange Border
   static const Color secondary = Color(0xFFFF8A50); // Coral Accent
 
-  // True Deep Neutrals (Charcoal / Zinc / Slate)
-  static const Color background = Color(0xFF0E1015); // Deep Charcoal Scaffold
-  static const Color surface = Color(0xFF151821); // Card Surface
-  static const Color surfaceElevated = Color(0xFF1D212E); // Modal & Dialog Surface
-  static const Color surfaceBorder = Color(0x1AFFFFFF); // 10% White Border
-  static const Color surfaceBorderSubtle = Color(0x0FFFFFFF); // 6% White Border
-  static const Color inputFill = Color(0x0DFFFFFF); // 5% White Glass Input
+  // Crisp Editorial White & Pure Neutrals
+  static const Color background = Color(0xFFF8F9FA); // Crisp Porcelain White Scaffold
+  static const Color surface = Color(0xFFFFFFFF); // Pure Crisp White Card Surface
+  static const Color surfaceElevated = Color(0xFFFFFFFF); // Modal, Dialog & Floating Capsule
+  static const Color surfaceBorder = Color(0xFFE2E8F0); // Subtle Slate-200 Border
+  static const Color surfaceBorderSubtle = Color(0xFFF1F5F9); // Light Slate-100 Border
+  static const Color inputFill = Color(0xFFF8FAFC); // Slate-50 Clean Soft Input Fill
 
   // High-End Gradients
   static const LinearGradient orangeGradient = LinearGradient(
@@ -35,15 +35,15 @@ class AppColors {
   );
 
   static const LinearGradient glassCardGradient = LinearGradient(
-    colors: [Color(0x1F252A38), Color(0x12151821)],
+    colors: [Color(0xFFFFFFFF), Color(0xFFF8FAFC)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  // High-Contrast Typography
-  static const Color textPrimary = Color(0xFFF8FAFC); // Crisp Off-White
-  static const Color textSecondary = Color(0xFF94A3B8); // Slate 400
-  static const Color textMuted = Color(0xFF64748B); // Slate 500
+  // High-Contrast Typography (Crisp Slate Neutrals)
+  static const Color textPrimary = Color(0xFF0F172A); // Slate-900 / Deep Slate Headline
+  static const Color textSecondary = Color(0xFF475569); // Slate-600 / Subtitle
+  static const Color textMuted = Color(0xFF94A3B8); // Slate-400 / Captions & Placeholders
 
   // Status & Utility
   static const Color success = Color(0xFF10B981);
@@ -52,11 +52,11 @@ class AppColors {
 }
 
 class AppTheme {
-  static ThemeData get darkTheme {
+  static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      colorScheme: const ColorScheme.dark(
+      brightness: Brightness.light,
+      colorScheme: const ColorScheme.light(
         surface: AppColors.surface,
         primary: AppColors.primary,
         onPrimary: Colors.white,
@@ -76,7 +76,7 @@ class AppTheme {
         },
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.background.withValues(alpha: 0.85),
+        backgroundColor: AppColors.surface.withValues(alpha: 0.95),
         elevation: 0,
         scrolledUnderElevation: 0,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
@@ -89,7 +89,7 @@ class AppTheme {
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surfaceElevated,
-        elevation: 24,
+        elevation: 16,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: AppColors.surfaceBorder, width: 1),
@@ -135,4 +135,7 @@ class AppTheme {
       ),
     );
   }
+
+  // Backward compatibility alias
+  static ThemeData get darkTheme => lightTheme;
 }

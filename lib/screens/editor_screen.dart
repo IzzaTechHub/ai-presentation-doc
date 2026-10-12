@@ -223,25 +223,25 @@ class _EditorScreenState extends State<EditorScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF171F33),
+        backgroundColor: AppColors.surface,
         title: Text(
           "Delete Slide",
-          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+          style: GoogleFonts.outfit(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
         ),
         content: Text(
           "Are you sure you want to delete Slide ${_selectedSlideIndex + 1}?",
-          style: GoogleFonts.inter(color: const Color(0xFFCBC3D7)),
+          style: GoogleFonts.inter(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
               "Cancel",
-              style: GoogleFonts.inter(color: const Color(0xFFCBC3D7)),
+              style: GoogleFonts.inter(color: AppColors.textSecondary),
             ),
           ),
           TextButton(
-            style: TextButton.styleFrom(foregroundColor: const Color(0xFFFFB4AB)),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
             onPressed: () {
               Navigator.pop(context);
               _commitEdit(rebuild: false);
@@ -281,7 +281,7 @@ class _EditorScreenState extends State<EditorScreen> {
         border: Border.all(color: AppColors.surfaceBorder, width: 1.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -323,7 +323,7 @@ class _EditorScreenState extends State<EditorScreen> {
                       value: layoutValue,
                       dropdownColor: AppColors.surfaceElevated,
                       style: GoogleFonts.inter(
-                        color: AppColors.primaryLight,
+                        color: AppColors.textPrimary,
                         fontWeight: FontWeight.w700,
                         fontSize: 11,
                       ),
@@ -359,7 +359,7 @@ class _EditorScreenState extends State<EditorScreen> {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: AppColors.primaryBorder),
                   ),
-                  child: const Icon(Icons.add_rounded, color: AppColors.primaryLight, size: 20),
+                  child: const Icon(Icons.add_rounded, color: AppColors.primary, size: 20),
                 ),
               ),
               const SizedBox(width: 6),
@@ -455,7 +455,7 @@ class _EditorScreenState extends State<EditorScreen> {
                       style: GoogleFonts.outfit(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -567,7 +567,7 @@ class _EditorScreenState extends State<EditorScreen> {
             },
             child: const Padding(
               padding: EdgeInsets.all(8.0),
-              child: Icon(Icons.palette_outlined, color: AppColors.primaryLight, size: 22),
+              child: Icon(Icons.palette_outlined, color: AppColors.primary, size: 22),
             ),
           ),
           InteractiveBounce(
@@ -611,14 +611,14 @@ class _EditorScreenState extends State<EditorScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.file_upload_outlined, color: AppColors.primaryLight, size: 16),
+                    const Icon(Icons.file_upload_outlined, color: AppColors.primary, size: 16),
                     const SizedBox(width: 4),
                     Text(
                       "Export",
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
-                        color: AppColors.primaryLight,
+                        color: AppColors.primary,
                       ),
                     ),
                   ],
@@ -629,7 +629,7 @@ class _EditorScreenState extends State<EditorScreen> {
         ],
         shape: const Border(
           bottom: BorderSide(
-            color: Color(0x1AFFFFFF),
+            color: AppColors.surfaceBorder,
             width: 1.0,
           ),
         ),
@@ -696,7 +696,7 @@ class _EditorScreenState extends State<EditorScreen> {
                               color: Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.12),
+                                color: AppColors.surfaceBorder,
                                 width: 1.5,
                               ),
                             ),
@@ -732,7 +732,7 @@ class _EditorScreenState extends State<EditorScreen> {
                             color: template.colors.backgroundStart == null ? _parseHex(template.colors.background) : null,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: isSelected ? AppColors.primary : Colors.white.withValues(alpha: 0.12),
+                              color: isSelected ? AppColors.primary : AppColors.surfaceBorder,
                               width: isSelected ? 2.5 : 1.0,
                             ),
                             boxShadow: isSelected
@@ -792,7 +792,7 @@ class _EditorScreenState extends State<EditorScreen> {
               // STAGE: Presentation canvas + under-slide toolbar
               Expanded(
                 child: Container(
-                  color: const Color(0xFF060E20).withValues(alpha: 0.3),
+                  color: const Color(0xFFF1F5F9),
                   padding: EdgeInsets.only(
                     left: 24,
                     right: 24,
@@ -843,12 +843,12 @@ class _EditorScreenState extends State<EditorScreen> {
                                           : null,
                                       borderRadius: BorderRadius.circular(16),
                                       border: Border.all(
-                                        color: Colors.white.withValues(alpha: 0.08),
+                                        color: AppColors.surfaceBorder,
                                         width: 1.0,
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.4),
+                                          color: Colors.black.withValues(alpha: 0.12),
                                           blurRadius: 20,
                                           offset: const Offset(0, 8),
                                         ),

@@ -210,10 +210,10 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 450,
             height: 450,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer, Colors.transparent],
+                  colors: [AppColors.primaryContainer.withValues(alpha: 0.8), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -226,10 +226,10 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 400,
             height: 400,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x1FFF5722), Colors.transparent],
+                  colors: [AppColors.primaryContainer.withValues(alpha: 0.5), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -269,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             "Next-Gen AI Deck Generator",
                             style: GoogleFonts.inter(
-                              color: AppColors.primaryLight,
+                              color: AppColors.primary,
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                             ),
@@ -285,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: GoogleFonts.outfit(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         letterSpacing: -0.5,
                         height: 1.2,
                       ),
@@ -309,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(22.0),
                           decoration: BoxDecoration(
-                            color: AppColors.surface.withValues(alpha: 0.7),
+                            color: AppColors.surface,
                             borderRadius: BorderRadius.circular(22),
                             border: Border.all(
                               color: AppColors.surfaceBorder,
@@ -317,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.3),
+                                color: Colors.black.withValues(alpha: 0.05),
                                 blurRadius: 20,
                                 offset: const Offset(0, 8),
                               ),
@@ -379,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 style: GoogleFonts.inter(
-                                  color: Colors.white,
+                                  color: AppColors.textPrimary,
                                   fontSize: 15,
                                 ),
                               ),
@@ -400,7 +400,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         borderRadius: BorderRadius.circular(20),
                                         border: Border.all(
                                           color: _isPerfecting
-                                              ? Colors.white10
+                                              ? AppColors.surfaceBorder
                                               : AppColors.primaryBorder,
                                           width: 1.0,
                                         ),
@@ -421,7 +421,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ] else ...[
                                             const Icon(
                                               Icons.auto_fix_high_rounded,
-                                              color: AppColors.primaryLight,
+                                              color: AppColors.primary,
                                               size: 15,
                                             ),
                                             const SizedBox(width: 6),
@@ -429,7 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Text(
                                             _isPerfecting ? "Perfecting..." : "Perfect Prompt",
                                             style: GoogleFonts.inter(
-                                              color: AppColors.primaryLight,
+                                              color: AppColors.primary,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
                                             ),
@@ -445,10 +445,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                         decoration: BoxDecoration(
-                                          color: const Color(0x1F757575),
+                                          color: AppColors.surfaceBorderSubtle,
                                           borderRadius: BorderRadius.circular(20),
                                           border: Border.all(
-                                            color: Colors.white24,
+                                            color: AppColors.surfaceBorder,
                                             width: 1.0,
                                           ),
                                         ),
@@ -457,14 +457,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                           children: [
                                             const Icon(
                                               Icons.undo_rounded,
-                                              color: Colors.white70,
+                                              color: AppColors.textSecondary,
                                               size: 14,
                                             ),
                                             const SizedBox(width: 6),
                                             Text(
                                               "Undo",
                                               style: GoogleFonts.inter(
-                                                color: Colors.white70,
+                                                color: AppColors.textSecondary,
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w500,
                                               ),
@@ -505,7 +505,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                       decoration: BoxDecoration(
-                                        color: AppColors.primaryContainer.withValues(alpha: 0.6),
+                                        color: AppColors.primaryContainer.withValues(alpha: 0.8),
                                         borderRadius: BorderRadius.circular(20),
                                         border: Border.all(
                                           color: AppColors.primaryBorder,
@@ -517,16 +517,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                         children: [
                                           const Icon(
                                             Icons.lightbulb_outline_rounded,
-                                            color: AppColors.primaryLight,
+                                            color: AppColors.primary,
                                             size: 14,
                                           ),
                                           const SizedBox(width: 6),
                                           Text(
                                             topic,
                                             style: GoogleFonts.inter(
-                                              color: AppColors.primaryLight,
+                                              color: AppColors.primaryDark,
                                               fontSize: 12,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.w600,
                                             ),
                                           ),
                                         ],
@@ -634,7 +634,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 data: SliderTheme.of(context).copyWith(
                                   trackHeight: 6,
                                   activeTrackColor: AppColors.primary,
-                                  inactiveTrackColor: Colors.white.withValues(alpha: 0.1),
+                                  inactiveTrackColor: AppColors.surfaceBorder,
                                   thumbColor: AppColors.primary,
                                   overlayColor: AppColors.primaryContainer,
                                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10.0),

@@ -99,14 +99,14 @@ class _TemplateScreenState extends State<TemplateScreen> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            backgroundColor: const Color(0xFF171F33),
+            backgroundColor: AppColors.surface,
             title: Text(
               "Generation Failed",
-              style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
             ),
             content: Text(
               e.toString().replaceAll("Exception: ", ""),
-              style: GoogleFonts.inter(color: const Color(0xFFCBC3D7)),
+              style: GoogleFonts.inter(color: AppColors.textSecondary),
             ),
             actions: [
               TextButton(
@@ -148,17 +148,17 @@ class _TemplateScreenState extends State<TemplateScreen> {
       ),
       body: Stack(
         children: [
-          // Background ambient leaks in brand orange
+          // Background ambient leaks in soft brand orange
           Positioned(
             top: -150,
             left: -100,
             width: 450,
             height: 450,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer, Colors.transparent],
+                  colors: [AppColors.primaryContainer.withValues(alpha: 0.8), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -170,10 +170,10 @@ class _TemplateScreenState extends State<TemplateScreen> {
             width: 400,
             height: 400,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x1FFF5722), Colors.transparent],
+                  colors: [AppColors.primaryContainer.withValues(alpha: 0.5), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -193,7 +193,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
                       style: GoogleFonts.outfit(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         letterSpacing: -0.2,
                       ),
                       maxLines: 1,
@@ -204,7 +204,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
                       "The layout rules, background tones, typography settings, and accents of your chosen template will apply to all slides.",
                       style: GoogleFonts.inter(
                         fontSize: 13,
-                        color: const Color(0xFFCBC3D7),
+                        color: AppColors.textSecondary,
                         height: 1.3,
                       ),
                     ),
@@ -319,11 +319,11 @@ class _TemplateScreenState extends State<TemplateScreen> {
     );
   }
 
-  // Shimmer Loader List for fetching templates state (Dark theme friendly)
+  // Shimmer Loader List for fetching templates state
   Widget _buildShimmerGrid() {
     return Shimmer.fromColors(
-      baseColor: const Color(0xFF1E293B),
-      highlightColor: const Color(0xFF2D3748),
+      baseColor: const Color(0xFFE2E8F0),
+      highlightColor: const Color(0xFFF8FAFC),
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         itemCount: 3,
@@ -332,7 +332,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
             margin: const EdgeInsets.only(bottom: 20),
             height: 250,
             decoration: BoxDecoration(
-              color: const Color(0xFF171F33),
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(16),
             ),
           );
@@ -341,7 +341,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
     );
   }
 
-  // Error fetching state UI (Dark themed)
+  // Error fetching state UI
   Widget _buildErrorState(String message) {
     return Center(
       child: Padding(
@@ -351,7 +351,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
           children: [
             const Icon(
               Icons.cloud_off_rounded,
-              color: Color(0xFFFFB4AB),
+              color: AppColors.error,
               size: 48,
             ),
             const SizedBox(height: 16),
@@ -360,7 +360,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
               style: GoogleFonts.outfit(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -368,7 +368,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
               message.replaceAll("Exception: ", ""),
               style: GoogleFonts.inter(
                 fontSize: 13,
-                color: const Color(0xFFCBC3D7),
+                color: AppColors.textSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -616,12 +616,18 @@ class TemplateListItem extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
+                    color: AppColors.primary.withValues(alpha: 0.25),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
                   )
                 ]
-              : null,
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  )
+                ],
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -639,7 +645,7 @@ class TemplateListItem extends StatelessWidget {
                         Text(
                           template.name,
                           style: GoogleFonts.outfit(
-                            color: Colors.white,
+                            color: AppColors.textPrimary,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -662,7 +668,7 @@ class TemplateListItem extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: isSelected ? AppColors.primary : Colors.white24,
+                        color: isSelected ? AppColors.primary : AppColors.surfaceBorder,
                         width: 2,
                       ),
                       color: isSelected ? AppColors.primary : Colors.transparent,
@@ -854,7 +860,7 @@ class TemplateListItem extends StatelessWidget {
                   Text(
                     "Palette: ",
                     style: GoogleFonts.inter(
-                      color: const Color(0xFFCBC3D7).withValues(alpha: 0.6),
+                      color: AppColors.textMuted,
                       fontSize: 11,
                     ),
                   ),
@@ -946,7 +952,7 @@ class TemplateListItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 3),
       child: Icon(
         icon,
-        color: const Color(0xFFCBC3D7).withValues(alpha: 0.5),
+        color: AppColors.textMuted,
         size: 14,
       ),
     );
@@ -1013,12 +1019,12 @@ class _GenerationProgressDialogState extends State<_GenerationProgressDialog> {
           border: Border.all(color: AppColors.surfaceBorder, width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.5),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 30,
               offset: const Offset(0, 12),
             ),
             BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.15),
+              color: AppColors.primary.withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
@@ -1072,7 +1078,7 @@ class _GenerationProgressDialogState extends State<_GenerationProgressDialog> {
                 style: GoogleFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   letterSpacing: -0.3,
                 ),
                 textAlign: TextAlign.center,

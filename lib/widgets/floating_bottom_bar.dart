@@ -71,7 +71,7 @@ class FloatingBottomBar extends StatelessWidget {
               height: 64,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.surfaceElevated.withValues(alpha: 0.85),
+                color: AppColors.surfaceElevated.withValues(alpha: 0.92),
                 borderRadius: BorderRadius.circular(32),
                 border: Border.all(
                   color: AppColors.surfaceBorder,
@@ -79,9 +79,9 @@ class FloatingBottomBar extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.45),
-                    blurRadius: 24,
-                    offset: const Offset(0, 10),
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 6),
                   ),
                   BoxShadow(
                     color: AppColors.primary.withValues(alpha: 0.08),
@@ -128,9 +128,9 @@ class FloatingBottomBar extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.4),
-                    blurRadius: 14,
-                    offset: const Offset(0, 4),
+                    color: AppColors.primary.withValues(alpha: 0.35),
+                    blurRadius: 12,
+                    offset: const Offset(0, 3),
                   ),
                 ]
               : null,
@@ -140,7 +140,7 @@ class FloatingBottomBar extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isSelected ? Colors.white : AppColors.textMuted,
+              color: isSelected ? Colors.white : AppColors.textSecondary,
               size: 22,
             ),
             if (isSelected) ...[

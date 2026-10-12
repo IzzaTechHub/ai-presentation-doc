@@ -111,17 +111,17 @@ class _ExportScreenState extends State<ExportScreen> {
       ),
       body: Stack(
         children: [
-          // Background ambient leaks in orange
+          // Background ambient leaks in soft brand orange
           Positioned(
             top: -150,
             left: -100,
             width: 400,
             height: 400,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer, Colors.transparent],
+                  colors: [AppColors.primaryContainer.withValues(alpha: 0.8), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -133,10 +133,10 @@ class _ExportScreenState extends State<ExportScreen> {
             width: 350,
             height: 350,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x1FFF5722), Colors.transparent],
+                  colors: [AppColors.primaryContainer.withValues(alpha: 0.5), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -163,7 +163,7 @@ class _ExportScreenState extends State<ExportScreen> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.2),
+                            color: const Color(0xFF10B981).withValues(alpha: 0.15),
                             blurRadius: 24,
                             spreadRadius: 4,
                           ),
@@ -187,7 +187,7 @@ class _ExportScreenState extends State<ExportScreen> {
                     style: GoogleFonts.outfit(
                       fontSize: 24,
                       fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                       letterSpacing: -0.5,
                     ),
                     textAlign: TextAlign.center,
@@ -215,6 +215,13 @@ class _ExportScreenState extends State<ExportScreen> {
                         color: AppColors.surfaceBorder,
                         width: 1.0,
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 14,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -235,7 +242,7 @@ class _ExportScreenState extends State<ExportScreen> {
                     onTap: _isLoading ? null : _downloadPPTX,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceElevated,
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: AppColors.primaryBorder,
@@ -243,12 +250,12 @@ class _ExportScreenState extends State<ExportScreen> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.3),
+                            color: Colors.black.withValues(alpha: 0.04),
                             blurRadius: 18,
                             offset: const Offset(0, 6),
                           ),
                           BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.15),
+                            color: AppColors.primary.withValues(alpha: 0.08),
                             blurRadius: 16,
                             offset: const Offset(0, 2),
                           ),
@@ -264,7 +271,7 @@ class _ExportScreenState extends State<ExportScreen> {
                                 color: AppColors.primaryContainer,
                                 borderRadius: BorderRadius.circular(14),
                               ),
-                              child: const Icon(Icons.download_rounded, color: AppColors.primaryLight, size: 28),
+                              child: const Icon(Icons.download_rounded, color: AppColors.primary, size: 28),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
@@ -276,7 +283,7 @@ class _ExportScreenState extends State<ExportScreen> {
                                     style: GoogleFonts.inter(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                      color: AppColors.textPrimary,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -292,7 +299,7 @@ class _ExportScreenState extends State<ExportScreen> {
                             ),
                             const Icon(
                               Icons.arrow_forward_ios_rounded,
-                              color: AppColors.primaryLight,
+                              color: AppColors.primary,
                               size: 16,
                             ),
                           ],
@@ -308,7 +315,7 @@ class _ExportScreenState extends State<ExportScreen> {
           // Loading Dialog Overlay
           if (_isLoading)
             Container(
-              color: Colors.black.withValues(alpha: 0.7),
+              color: Colors.black.withValues(alpha: 0.35),
               alignment: Alignment.center,
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
@@ -320,7 +327,7 @@ class _ExportScreenState extends State<ExportScreen> {
                     border: Border.all(color: AppColors.surfaceBorder, width: 1.2),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.5),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 28,
                       ),
                     ],
@@ -338,7 +345,7 @@ class _ExportScreenState extends State<ExportScreen> {
                         style: GoogleFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                     ],
@@ -356,14 +363,14 @@ class _ExportScreenState extends State<ExportScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: AppColors.primaryLight, size: 20),
+        Icon(icon, color: AppColors.primary, size: 20),
         const SizedBox(height: 6),
         Text(
           value,
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 2),

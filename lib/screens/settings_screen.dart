@@ -32,17 +32,17 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // Background ambient leaks in brand orange
+          // Background ambient leaks in soft brand orange
           Positioned(
             top: -150,
             left: -100,
             width: 400,
             height: 400,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [AppColors.primaryContainer, Colors.transparent],
+                  colors: [AppColors.primaryContainer.withValues(alpha: 0.8), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -54,10 +54,10 @@ class SettingsScreen extends StatelessWidget {
             width: 350,
             height: 350,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x1FFF5722), Colors.transparent],
+                  colors: [AppColors.primaryContainer.withValues(alpha: 0.6), Colors.transparent],
                   radius: 0.5,
                 ),
               ),
@@ -80,14 +80,14 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.25),
+                        color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 16,
                         offset: const Offset(0, 4),
                       ),
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.08),
-                        blurRadius: 20,
-                        offset: const Offset(0, 4),
+                        color: AppColors.primary.withValues(alpha: 0.06),
+                        blurRadius: 16,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
@@ -112,7 +112,7 @@ class SettingsScreen extends StatelessWidget {
                               style: GoogleFonts.outfit(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w800,
-                                color: Colors.white,
+                                color: AppColors.textPrimary,
                                 letterSpacing: -0.5,
                               ),
                             ),
@@ -137,7 +137,7 @@ class SettingsScreen extends StatelessWidget {
                                 style: GoogleFonts.inter(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.primaryLight,
+                                  color: AppColors.primaryDark,
                                 ),
                               ),
                             ),
@@ -154,7 +154,7 @@ class SettingsScreen extends StatelessWidget {
                   style: GoogleFonts.outfit(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -220,7 +220,7 @@ class SettingsScreen extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 14,
             offset: const Offset(0, 4),
           ),
@@ -244,12 +244,12 @@ class SettingsScreen extends StatelessWidget {
           color: AppColors.primaryContainer,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(icon, color: AppColors.primaryLight, size: 20),
+        child: Icon(icon, color: AppColors.primary, size: 20),
       ),
       title: Text(
         title,
         style: GoogleFonts.inter(
-          color: Colors.white,
+          color: AppColors.textPrimary,
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
@@ -266,7 +266,7 @@ class SettingsScreen extends StatelessWidget {
           (onTap != null
               ? const Icon(
                   Icons.chevron_right_rounded,
-                  color: AppColors.primaryLight,
+                  color: AppColors.primary,
                   size: 20,
                 )
               : null),
